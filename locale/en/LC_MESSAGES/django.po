@@ -1,0 +1,164 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-05 22:24+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: common/templates/403.html:2
+msgid "403 TITLE"
+msgstr "Forbidden"
+
+#: common/templates/403.html:2
+msgid "403 DESCRIPTION"
+msgstr "You don't have permission to access this resource."
+
+#: common/templates/404.html:2
+msgid "404 TITLE"
+msgstr "Page not found"
+
+#: common/templates/404.html:2
+msgid "404 DESCRIPTION"
+msgstr "The page you are looking for was not found."
+
+#: common/templates/500.html:2
+msgid "500 TITLE"
+msgstr "Internal server error"
+
+#: common/templates/500.html:2
+msgid "500 DESCRIPTION"
+msgstr "The server encountered an error and could not complete your request."
+
+#: common/templates/account/account.html:4
+msgid "INFORMATION"
+msgstr "Information"
+
+#: common/templates/account/account.html:8
+#, python-format
+msgid "WELCOME_USER_MESSAGE %(username)s"
+msgstr "Logged in as %(username)s."
+
+#: common/templates/account/account.html:9
+#: common/templates/account/password_change.html:5
+#: common/templates/account/password_reset_confirm.html:5
+msgid "CHANGE PASSWORD"
+msgstr "Change password"
+
+#: common/templates/account/account.html:13
+msgid "SIGN OUT"
+msgstr "Sign out"
+
+#: common/templates/account/login.html:5 common/templates/account/login.html:15
+#: common/templates/account/password_reset_complete.html:9
+#: common/templates/account/password_reset_done.html:9
+#: templates/generic/main.html:56
+msgid "SIGN IN"
+msgstr "Sign in"
+
+#: common/templates/account/login.html:12
+msgid "RESET PASSWORD LINK"
+msgstr "Forgot password? Reset password."
+
+#: common/templates/account/password_change.html:12
+#: common/templates/account/password_reset_confirm.html:13
+msgid "SAVE"
+msgstr "Save"
+
+#: common/templates/account/password_change_done.html:4
+#: common/templates/account/password_reset_complete.html:4
+msgid "PASSWORD CHANGED TITLE"
+msgstr "The password has been changed"
+
+#: common/templates/account/password_change_done.html:7
+#: common/templates/account/password_reset_complete.html:7
+msgid "PASSWORD CHANGED INFO"
+msgstr "Your password has been successfully changed."
+
+#: common/templates/account/password_reset.html:5
+#: common/templates/account/password_reset.html:12
+#: common/templates/account/password_reset_confirm.html:19
+msgid "RESET PASSWORD"
+msgstr "Reset password"
+
+#: common/templates/account/password_reset_confirm.html:17
+msgid "RESET PASSWORD ERROR"
+msgstr "The link has expired or is invalid. Please try again."
+
+#: common/templates/account/password_reset_done.html:4
+msgid "RESET PASSWORD DONE"
+msgstr "Password link reset sent"
+
+#: common/templates/account/password_reset_done.html:7
+msgid "RESET PASSWORD INFO"
+msgstr ""
+"We’ve emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+
+#: common/templates/generic/error.html:10
+msgid "OOPS"
+msgstr "Oops!"
+
+#: common/templates/generic/modal.html:13
+msgid "YES"
+msgstr "Yes"
+
+#: common/templates/generic/modal.html:14
+msgid "NO"
+msgstr "No"
+
+#: common/views_account.py:9
+msgid "USERNAME OR EMAIL"
+msgstr "Username or email"
+
+#: sdr/templates/config.html:6
+msgid "CONFIGURATION"
+msgstr "Configuration"
+
+#: sdr/templates/groups.html:5
+msgid "GROUPS"
+msgstr "Groups"
+
+#: sdr/templates/spectrograms.html:5
+msgid "SPECTROGRAMS"
+msgstr "Spectrograms"
+
+#: sdr/templates/transmissions.html:5
+msgid "TRANSMISSIONS"
+msgstr "Transmissions"
+
+#: templates/generic/main.html:32 templates/generic/main.html:42
+msgid "APP_NAME"
+msgstr "Sdr Monitor"
+
+#: templates/generic/main.html:51
+msgid "ADMIN PANEL"
+msgstr "Admin"
+
+#: templates/generic/main.html:74
+msgid "ALL RIGHTS RESERVED"
+msgstr "All rights reserved."
+
+#: templates/generic/main.html:75
+msgid "DESIGNED BY"
+msgstr "Designed by"
+
+#: templates/home.html:4
+msgid "WELCOME TITLE"
+msgstr "Welcome"
+
+#: templates/home.html:8
+msgid "WELCOME MESSAGE"
+msgstr "Enjoy the tools!"

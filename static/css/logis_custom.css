@@ -1,0 +1,36 @@
+.text-background {
+    background-color: rgba(14, 29, 52, 0.8);
+    padding: 10px;
+    color: white;
+    border-radius: 8px;
+}
+
+.form-control {
+    border-color: #7f838a;
+}
+
+p.title-medium {
+    color: var(--heading-color);
+    font-family: var(--heading-font);
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0px;
+    padding: 0px;
+}
+
+p.title-small {
+    color: var(--heading-color);
+    font-family: var(--heading-font);
+    margin: 0px;
+    padding: 0px;
+}
+
+.custom-section {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.form-check-input {
+    border: 2px solid #6c757d;
+    background-color: #fff;
+}

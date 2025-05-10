@@ -1,0 +1,86 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    {% include "generic/meta/fonts.html" %}
+    {% include "generic/meta/css.html" %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.css" rel="stylesheet">
+    <link href="{% static 'css/logis.css' %}" rel="stylesheet">
+    <link href="{% static 'css/logis_custom.css' %}" rel="stylesheet">
+    <link href="{% static 'css/dragscroll.css' %}" rel="stylesheet">
+
+    {% include "generic/meta/js.html" %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dragscroll/0.0.8/dragscroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-url/2.5.3/url.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
+
+    <script src="{% static 'js/collapse.js' %}"></script>
+    <script src="{% static 'js/field_filter.js' %}"></script>
+    {% block main_scripts %}
+    {% endblock %}
+
+    <title>{% block main_title %}{% endblock %} | {% trans "APP_NAME" %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+</head>
+
+<body class="index-page scrolled d-flex flex-column min-vh-100">
+
+    <header id="header" class="header d-flex align-items-center fixed-top">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center">
+            <a href="{% url 'home' %}" class="logo d-flex align-items-center me-auto">
+                <img src="{% static 'img/favicon.ico' %}" alt="">
+                <h1 class="sitename">{% trans "APP_NAME" %}</h1>
+            </a>
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="{% url 'sdr_config' %}"> Configuration </a></li>
+                    <li><a href="{% url 'sdr_groups' %}"> Groups </a></li>
+                    <li><a href="{% url 'sdr_spectrograms' %}"> Spectrograms </a></li>
+                    <li><a href="{% url 'sdr_transmissions' %}"> Transmissions </a></li>
+                    {% if user.is_authenticated and user.is_staff %}
+                    <li><a href="{% url 'admin:index' %}">{% trans "ADMIN PANEL" %}</a></li>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'account' %}">{{user.username|default:user.email}}</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}">{% trans "SIGN IN" %}</a></li>
+                    {% endif %}
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+        </div>
+    </header>
+
+    {% block main_static %}
+    {% endblock %}
+
+    <main class="main flex-grow-1">
+        {% block main_content %}
+        {% endblock %}
+    </main>
+
+    <footer id="footer" class="footer dark-background">
+        <div class="container copyright text-center mt-4">
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">shajen.pl</strong> <span>{% trans "ALL RIGHTS RESERVED" %}</span></p>
+            <div class="credits">{% trans "DESIGNED BY" %} <a href="https://bootstrapmade.com/">BootstrapMade</a> </div>
+        </div>
+
+    </footer>
+
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <script src="{% static 'js/logis.js' %}"></script>
+
+</body>
+
+</html>

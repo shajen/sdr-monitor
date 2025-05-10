@@ -1,0 +1,79 @@
+{% extends "generic/simple_big.html" %}
+{% load i18n %}
+{% load sdr_filters %}
+
+{% block simple_title %}{% trans "TRANSMISSIONS" %}: {{items.paginator.count}}{% endblock %}
+
+{% block simple_content %}
+<div class="row mt-2">
+    <div class="col-12">
+        <table class="table table-striped table-bordered table-hover">
+            <tr>
+                <form action="{% url 'sdr_transmissions' %}" method="get">
+                    {% include "generic/headers/filter_string.html" with field="device_name" options=device_name_options %}
+                    {% include "generic/headers/filter_number.html" with field="datetime" %}
+                    {% include "generic/headers/filter_number.html" with field="duration" %}
+                    {% include "generic/headers/filter_number.html" with field="frequency" %}
+                    {% include "generic/headers/filter_string.html" with field="modulation" options=modulation_options %}
+                    {% include "generic/headers/filter_string.html" with field="group_name" options=group_name_options %}
+                    {% include "generic/headers/filter_string.html" with field="class_name" options=class_name_options %}
+                    <th colspan="3">
+                        <input type="hidden" id="input_order_by" value="{{ order_by }}" name="order_by">
+                        <input type="submit" class="btn btn-success" value="Filter">
+                        <a href="?reset" class="btn btn-danger">Reset</a>
+                    </th>
+                </form>
+            </tr>
+            <tr>
+                {% include "generic/headers/sort.html" with name="Device" field="device_name" col="1" %}
+                {% include "generic/headers/sort.html" with name="Date" field="datetime" col="1" %}
+                {% include "generic/headers/sort.html" with name="Duration" field="duration" col="1" %}
+                {% include "generic/headers/sort.html" with name="Frequency" field="frequency" col="1" %}
+                {% include "generic/headers/sort.html" with name="Modulation" field="modulation" col="1" %}
+                {% include "generic/headers/sort.html" with name="Group" field="group_name" col="1" %}
+                {% include "generic/headers/sort.html" with name="Class" field="class_name" col="1" %}
+                <th class="col-md-2">
+                    Decoded file
+                </th>
+                <th class="col-md-1">
+                    Details
+                </th>
+            </tr>
+            {% for transmission in items %}
+            <tr>
+                <td class="py-1">{{ transmission.device_name }}</td>
+                <td class="py-1">
+                    <nobr>
+                        {{ transmission.datetime|date:"Y-m-d" }}
+                        <b>{{ transmission.datetime|date:"H:i:s" }}</b>
+                    </nobr>
+                </td>
+                <td class="py-1">{{ transmission.duration }}</td>
+                <td class="py-1">{{ transmission.frequency|frequency:2 }}</td>
+                <td class="py-1">{{ transmission.modulation }}</td>
+                <td class="py-1">{{ transmission.group_name }}</td>
+                <td class="py-1">{{ transmission.class_name }}</td>
+                <td class="py-1">
+                    {% if transmission.group.data_type == 'audio' %}
+                    <div class="btn-group" role="group">
+                        <audio controls preload="none">
+                            <source src="{% url 'sdr_transmission_data' transmission.id %}" type="audio/mpeg">
+                        </audio>
+                        <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>
+                            download </a>
+                    </div>
+                    {% elif transmission.group.data_type == 'image' %}
+                    <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>
+                        download </a>
+                    {% endif %}
+                </td>
+                <td class="py-1">
+                    <a href="{% url 'sdr_transmission' transmission.id %}" class="btn btn-primary">open</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% include "generic/paginator.html" with page_obj=items page_param="page" %}
+{% endblock %}
