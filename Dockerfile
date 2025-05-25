@@ -2,7 +2,7 @@ FROM ubuntu:24.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc python3-pip libpq5 tzdata gettext && \
+    apt-get install -y --no-install-recommends gcc python3-pip python3-numpy libpq5 tzdata gettext && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/
@@ -14,7 +14,7 @@ RUN MAKEFLAGS="-j$(nproc)" pip install --break-system-packages --no-cache-dir -r
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 libpq5 tzdata gettext sox libsox-fmt-mp3 && \
+    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata gettext sox libsox-fmt-mp3 && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/
@@ -25,6 +25,7 @@ WORKDIR /app
 COPY . .
 COPY entrypoint /entrypoint
 RUN django-admin compilemessages && \
-    mkdir -p /app/data
+    mkdir -p /app/data && \
+    ./gen_decoder.sh
 
 EXPOSE 8000

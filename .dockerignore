@@ -6,4 +6,5 @@
 data
 Dockerfile
 patches
+sdr/decoders/*.py
 tools

@@ -60,12 +60,8 @@ class Classifier(threading.Thread):
         try:
             sample_rate = t.end_frequency - t.begin_frequency
             if t.group.modulation in ["FM", "AM"] and os.path.isfile(t.data_file.path):
-                data = np.memmap(t.data_file.path, dtype=np.uint8, mode="r")
-                factor = t.sample_size
-                data = data[: factor * (t.data_file.size // factor)].reshape(-1, factor)
-                (data, sample_rate) = decode(data, sample_rate, t.group.modulation)
-                data = data.astype(np.float32)
-                return self.classifiy(data)
+                data = sdr.signals.decode_audio(t.data_file.path, None, t.group.modulation, sample_rate)
+                return self.classifiy(np.array(data).astype(np.float32))
             else:
                 return "Unknown"
         except Exception as e:

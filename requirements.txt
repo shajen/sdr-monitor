@@ -17,5 +17,4 @@ paho-mqtt
 Pillow
 psycopg
 scipy
-sox
 tzlocal

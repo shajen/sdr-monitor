@@ -56,6 +56,9 @@ class AudioClass(models.Model):
     class Meta:
         unique_together = ("name", "subname")
 
+    def __str__(self):
+        return "%s - %s" % (self.name, self.subname)
+
 
 class Transmission(models.Model):
     begin_frequency = models.PositiveBigIntegerField("Begin (frequency)", db_index=True)
