@@ -51,7 +51,7 @@
                     <li><a href="{% url 'admin:index' %}">{% trans "ADMIN PANEL" %}</a></li>
                     {% endif %}
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'account' %}">{{user.username|default:user.email}}</a></li>
+                    <li><a href="{% url 'account' %}">{% trans "ACCOUNT" %}</a></li>
                     {% else %}
                     <li><a href="{% url 'login' %}">{% trans "SIGN IN" %}</a></li>
                     {% endif %}
