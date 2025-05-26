@@ -14,7 +14,7 @@ RUN MAKEFLAGS="-j$(nproc)" pip install --break-system-packages --no-cache-dir -r
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata gettext sox libsox-fmt-mp3 && \
+    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata gettext && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/
