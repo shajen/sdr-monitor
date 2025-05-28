@@ -27,5 +27,12 @@ COPY entrypoint /entrypoint
 RUN django-admin compilemessages && \
     mkdir -p /app/data && \
     ./gen_decoder.sh
+ARG VERSION=""
+ARG COMMIT=""
+ARG CHANGES=""
+RUN echo "$(TZ=UTC date +"%Y-%m-%dT%H:%M:%S%z")" | tee /sdr_monitor_build_time && \
+    echo "$VERSION" | tee /sdr_monitor_version && \
+    echo "$COMMIT" | tee /sdr_monitor_commit && \
+    echo "$CHANGES" | tee /sdr_monitor_changes
 
 EXPOSE 8000
