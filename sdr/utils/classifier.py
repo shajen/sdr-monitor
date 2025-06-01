@@ -8,7 +8,6 @@ import io
 import logging
 import numpy as np
 import os
-import scripts.utils
 import threading
 import time
 

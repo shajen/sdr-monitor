@@ -1,10 +1,9 @@
-from scripts.spectogram_reader import SpectrogramReader
-from scripts.transmission_reader import TransmissionReader
+from sdr.utils.spectogram_reader import SpectrogramReader
+from sdr.utils.transmission_reader import TransmissionReader
 import django.db
 import logging
 import paho.mqtt.client
 import threading
-import time
 
 
 class Reader(threading.Thread):

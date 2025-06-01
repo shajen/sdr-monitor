@@ -6,7 +6,7 @@ from humanize import naturalsize
 from sdr.models import *
 import logging
 import re
-import scripts.utils
+import sdr.utils.file
 import struct
 
 
@@ -59,7 +59,7 @@ class TransmissionReader:
             t.end_date = dt
         except Transmission.DoesNotExist:
             dir = "device_%d/transmission" % device.id
-            (filename, filename_full) = scripts.utils.get_filename(dir, dt, "%s_%d_%s.bin" % (dt.strftime("%H_%M_%S"), (begin_frequency + end_frequency) // 2, sample_type), True)
+            (filename, filename_full) = sdr.utils.file.get_filename(dir, dt, "%s_%d_%s.bin" % (dt.strftime("%H_%M_%S"), (begin_frequency + end_frequency) // 2, sample_type), True)
             t = Transmission.objects.create(
                 device=device,
                 begin_frequency=begin_frequency,

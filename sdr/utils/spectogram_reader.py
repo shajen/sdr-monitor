@@ -6,7 +6,7 @@ from sdr.models import *
 import logging
 import numpy as np
 import re
-import scripts.utils
+import sdr.utils.file
 import struct
 
 
@@ -53,7 +53,7 @@ class SpectrogramReader:
         except Spectrogram.DoesNotExist:
             f = (begin_frequency + end_frequency) // 2
             dir = "device_%d/spectrogram" % device.id
-            (filename, filename_full) = scripts.utils.get_filename(dir, begin_model_date, "%s_%d_%d.bin" % (begin_model_date.strftime("%H_%M_%S"), f, step_frequency), True)
+            (filename, filename_full) = sdr.utils.file.get_filename(dir, begin_model_date, "%s_%d_%d.bin" % (begin_model_date.strftime("%H_%M_%S"), f, step_frequency), True)
             s = Spectrogram.objects.create(
                 device=device,
                 begin_frequency=begin_frequency,

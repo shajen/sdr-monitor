@@ -1,5 +1,6 @@
-from scripts.cleaner import Cleaner
-from scripts.reader import Reader
+from sdr.utils.classifier import Classifier
+from sdr.utils.cleaner import Cleaner
+from sdr.utils.reader import Reader
 import argparse
 import logging
 import monitor.settings as settings
@@ -28,8 +29,6 @@ def run(*args):
     if args.cleaner:
         threads.append(Cleaner(args.spectrograms_total_size_gb, args.transmissions_total_size_gb))
     if args.classifier:
-        from scripts.classifier import Classifier
-
         threads.append(Classifier())
 
     for t in threads:
