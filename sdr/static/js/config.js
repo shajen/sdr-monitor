@@ -111,7 +111,7 @@ function selectScanner(scanner) {
 
     $("#device_selector").empty();
     $("#ignored_frequencies").find("tr:gt(0)").remove();
-    scanner['scanned_frequencies'].forEach(function (device) {
+    scanner['devices'].forEach(function (device) {
         addDevice(device);
     });
     scanner['ignored_frequencies'].forEach(function (range) {
@@ -156,7 +156,7 @@ function addDevice(device) {
 
     let l = document.createElement("label");
     $(l).addClass("form-check-label");
-    $(l).append(device["device_driver"] + " - " + device["device_serial"]);
+    $(l).append(device["driver"] + " - " + device["serial"]);
     $(l).click(function () {
         $(i).prop('checked', true);
         selectDevice(device);
@@ -166,7 +166,7 @@ function addDevice(device) {
     $(d).append(l);
 
     $("#device_selector").append(d);
-    $("#scanned_frequencies").find("tr:gt(0)").remove();
+    $("#devices").find("tr:gt(0)").remove();
     $("#gains").find("tr:gt(0)").remove();
 }
 
@@ -192,37 +192,37 @@ function addIgnoredFrequency(ranges, range) {
 function selectDevice(device) {
     let setInputsEnabled = function (enabled) {
         $("#device_sample_rate").prop("disabled", !enabled);
-        $("#scanned_frequencies :input").prop("disabled", !enabled);
+        $("#devices :input").prop("disabled", !enabled);
         $("#gains :input").prop("disabled", !enabled);
     };
 
-    $("#device_enabled").prop("checked", device["device_enabled"]);
+    $("#device_enabled").prop("checked", device["enabled"]);
     $("#device_enabled").prop("disabled", false);
     $("#device_enabled").unbind("click");
     $("#device_enabled").click(function () {
-        device['device_enabled'] = $(this).is(':checked');
+        device['enabled'] = $(this).is(':checked');
         setInputsEnabled($(this).is(':checked'));
         $("#save").prop("disabled", false);
     });
 
     $("#device_sample_rate").unbind("click");
     $("#device_sample_rate").empty();
-    device['device_sample_rates'].forEach(function (sample_rate) {
+    device['sample_rates'].forEach(function (sample_rate) {
         $("#device_sample_rate").append(new Option(sample_rate, sample_rate));
     });
-    $("#device_sample_rate").val(device['device_sample_rate']);
+    $("#device_sample_rate").val(device['sample_rate']);
     $("#device_sample_rate").change(function () {
-        device['device_sample_rate'] = parseInt($(this).val());
+        device['sample_rate'] = parseInt($(this).val());
         $("#save").prop("disabled", false);
     });
 
-    $("#scanned_frequencies").find("tr:gt(0)").remove();
+    $("#devices").find("tr:gt(0)").remove();
 
     $("#gains").find("tr:gt(0)").remove();
     device['ranges'].forEach(function (range) {
         addScannedFrequency(device['ranges'], range);
     });
-    device['device_gains'].forEach(function (gain) {
+    device['gains'].forEach(function (gain) {
         addGain(gain);
     });
 
@@ -234,7 +234,7 @@ function selectDevice(device) {
         $("#save").prop("disabled", false);
     });
 
-    setInputsEnabled(device["device_enabled"]);
+    setInputsEnabled(device["enabled"]);
 }
 
 function addScannedFrequency(ranges, range) {
@@ -251,7 +251,7 @@ function addScannedFrequency(ranges, range) {
         tr.remove();
         $("#save").prop("disabled", false);
     }));
-    $("#scanned_frequencies").append(tr);
+    $("#devices").append(tr);
 }
 
 function addGain(gain) {
