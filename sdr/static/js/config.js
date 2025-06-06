@@ -108,6 +108,7 @@ function selectScanner(scanner) {
     updateInput(scanner, "#color_log_enabled", ['output', 'color_log_enabled'], 'bool');
     updateInput(scanner, "#console_log_level", ['output', 'console_log_level'], 'string');
     updateInput(scanner, "#file_log_level", ['output', 'file_log_level'], 'string');
+    updateInput(scanner, "#workers", ['workers']);
 
     $("#device_selector").empty();
     $("#ignored_frequencies").find("tr:gt(0)").remove();
