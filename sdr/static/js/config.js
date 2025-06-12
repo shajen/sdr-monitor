@@ -15,6 +15,14 @@ $(document).ready(function () {
             $("#expert_mode_section").hide();
         }
     });
+    $("#help_mode_checkbox").change(function () {
+        if (this.checked) {
+            $(".help_mode_section").show();
+        }
+        else {
+            $(".help_mode_section").hide();
+        }
+    });
 });
 
 function connect(url) {
@@ -129,6 +137,8 @@ function selectScanner(scanner) {
     $("#device_enabled").prop("disabled", true);
     $("#device_sample_rate").prop("disabled", true);
     $("#new_scanned_frequency").prop("disabled", true);
+    $("#start_recording_level").prop("disabled", true);
+    $("#stop_recording_level").prop("disabled", true);
 }
 
 function updateInput(scanner, element_id, keys, type = 'integer') {
@@ -171,6 +181,18 @@ function addDevice(device) {
     $("#gains").find("tr:gt(0)").remove();
 }
 
+function updateDeviceInput(device, element_id, keys, type = 'integer') {
+    if (2 <= keys.length) { $(element_id).val(device[keys[0]][keys[1]]); }
+    else { $(element_id).val(device[keys[0]]); }
+    $(element_id).prop("disabled", false);
+    $(element_id).change(function () {
+        let value = parseValue($(this).val(), type)
+        if (2 <= keys.length) { device[keys[0]][keys[1]] = value; }
+        else { device[keys[0]] = value; }
+        $("#save").prop("disabled", false);
+    });
+}
+
 function addIgnoredFrequency(ranges, range) {
     let tr = document.createElement("tr");
     $(tr).append(createInput(range['frequency'], function (value) {
@@ -195,6 +217,8 @@ function selectDevice(device) {
         $("#device_sample_rate").prop("disabled", !enabled);
         $("#devices :input").prop("disabled", !enabled);
         $("#gains :input").prop("disabled", !enabled);
+        $("#start_recording_level").prop("disabled", !enabled);
+        $("#stop_recording_level").prop("disabled", !enabled);
     };
 
     $("#device_enabled").prop("checked", device["enabled"]);
@@ -235,6 +259,8 @@ function selectDevice(device) {
         $("#save").prop("disabled", false);
     });
 
+    updateDeviceInput(device, '#start_recording_level', ['start_recording_level']);
+    updateDeviceInput(device, '#stop_recording_level', ['stop_recording_level']);
     setInputsEnabled(device["enabled"]);
 }
 
