@@ -133,4 +133,6 @@ MQTT = {
     "password": os.getenv("MQTT_PASSWORD", "password"),
 }
 
+LOG_DIR = os.getenv("LOG_DIR", "")
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

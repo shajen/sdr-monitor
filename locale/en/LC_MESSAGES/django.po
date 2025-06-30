@@ -64,7 +64,7 @@ msgstr "Sign out"
 #: common/templates/account/login.html:5 common/templates/account/login.html:15
 #: common/templates/account/password_reset_complete.html:9
 #: common/templates/account/password_reset_done.html:9
-#: templates/generic/main.html:56
+#: templates/generic/main.html:61
 msgid "SIGN IN"
 msgstr "Sign in"
 
@@ -143,19 +143,27 @@ msgstr "Transmissions"
 msgid "APP_NAME"
 msgstr "Sdr Monitor"
 
-#: templates/generic/main.html:51
-msgid "ADMIN PANEL"
-msgstr "Panel"
+#: templates/generic/main.html:50
+msgid "EXTRA"
+msgstr "Debug"
 
-#: templates/generic/main.html:54
+#: templates/generic/main.html:53
+msgid "ADMIN PANEL"
+msgstr "Admin panel"
+
+#: templates/generic/main.html:55
+msgid "DOWNLOAD LOGS"
+msgstr "Download logs"
+
+#: templates/generic/main.html:59
 msgid "ACCOUNT"
 msgstr "Account"
 
-#: templates/generic/main.html:74
+#: templates/generic/main.html:79
 msgid "ALL RIGHTS RESERVED"
 msgstr "All rights reserved."
 
-#: templates/generic/main.html:75
+#: templates/generic/main.html:80
 msgid "DESIGNED BY"
 msgstr "Designed by"
 

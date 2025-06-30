@@ -47,9 +47,14 @@
                     <li><a href="{% url 'sdr_groups' %}"> Groups </a></li>
                     <li><a href="{% url 'sdr_spectrograms' %}"> Spectrograms </a></li>
                     <li><a href="{% url 'sdr_transmissions' %}"> Transmissions </a></li>
-                    {% if user.is_authenticated and user.is_staff %}
-                    <li><a href="{% url 'admin:index' %}">{% trans "ADMIN PANEL" %}</a></li>
-                    {% endif %}
+                    <li class="dropdown"><a href="#"><span>{% trans "EXTRA" %}</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            {% if user.is_authenticated and user.is_staff %}
+                            <li><a href="{% url 'admin:index' %}">{% trans "ADMIN PANEL" %}</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'sdr_logs' %}">{% trans "DOWNLOAD LOGS" %}</a></li>
+                        </ul>
+                    </li>
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'account' %}">{% trans "ACCOUNT" %}</a></li>
                     {% else %}

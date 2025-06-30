@@ -1,4 +1,5 @@
 from common.helpers import *
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
@@ -8,6 +9,7 @@ from django.shortcuts import render
 from django.utils.timezone import localtime
 from sdr.models import *
 from sdr.signals import *
+import common.utils.files
 import common.utils.filters
 import math
 import monitor.settings
@@ -211,3 +213,8 @@ def delete_group(request, group_id):
 @permission_required("sdr.change_device", raise_exception=True)
 def config(request):
     return render(request, "config.html", {"mqtt": monitor.settings.MQTT})
+
+
+@login_required()
+def logs(request):
+    return common.utils.files.get_directory_as_archive_response(settings.LOG_DIR, "logs")

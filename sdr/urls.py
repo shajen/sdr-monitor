@@ -6,6 +6,7 @@ urlpatterns = [
     path("group/add/", sdr.views.add_group, name="sdr_add_group"),
     path("group/delete/<int:group_id>/", sdr.views.delete_group, name="sdr_delete_group"),
     path("groups/", sdr.views.groups, name="sdr_groups"),
+    path("logs/", sdr.views.logs, name="sdr_logs"),
     path("spectrogram/<int:spectrogram_id>/", sdr.views.spectrogram, name="sdr_spectrogram"),
     path("spectrogram/<int:spectrogram_id>/data/", sdr.views.spectrogram_data, name="sdr_spectrogram_data"),
     path("spectrograms/", sdr.views.spectrograms, name="sdr_spectrograms"),
