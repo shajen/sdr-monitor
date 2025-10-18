@@ -16,5 +16,4 @@ OpenImageIO
 paho-mqtt
 Pillow
 psycopg
-scipy
 tzlocal
