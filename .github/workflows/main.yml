@@ -2,17 +2,28 @@ on: push
 
 env:
   IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
+  PLATFORMS: linux/arm64/v8,linux/amd64
+  CACHE_FROM: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:cache
+  CACHE_TO: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:cache,mode=max
 
 jobs:
   main:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: "true"
+      - name: Set up docker cache
+        uses: actions/cache@v4
+        with:
+          path: docker_cache
+          key: docker_cache
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        with:
+          cache-image: false
+          platforms: ${{ env.PLATFORMS }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
@@ -21,7 +32,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           build-args: |
             VERSION=${{ github.ref_name }}
@@ -29,39 +40,36 @@ jobs:
           context: .
           load: true
           tags: ${{ env.IMAGE }}:test
-          cache-from: |
-            type=registry,ref=${{ env.IMAGE }}:latest
-            type=registry,ref=${{ env.IMAGE }}:${{ github.ref_name }}
+          cache-from: ${{ env.CACHE_FROM }}
+          cache-to: ${{ env.CACHE_TO }}
       - name: Test
         run: |
           docker run --rm ${{ env.IMAGE }}:test python3 manage.py test
       - name: Push development version
         if: ${{ github.ref_type == 'branch' && contains(vars.CI_BRANCH, github.ref_name) }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           build-args: |
             VERSION=${{ github.ref_name }}
             COMMIT=${{ github.sha }}
           context: .
           push: true
-          platforms: linux/arm64/v8,linux/amd64
+          platforms: ${{ env.PLATFORMS }}
           tags: ${{ env.IMAGE }}:${{ github.ref_name }}
-          cache-from: type=registry,ref=${{ env.IMAGE }}:${{ github.ref_name }}
-          cache-to: type=inline
+          cache-from: ${{ env.CACHE_FROM }}
+          cache-to: ${{ env.CACHE_TO }}
       - name: Push release version
         if: ${{ github.ref_type == 'tag' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           build-args: |
             VERSION=${{ github.ref_name }}
             COMMIT=${{ github.sha }}
           context: .
           push: true
-          platforms: linux/arm64/v8,linux/amd64
+          platforms: ${{ env.PLATFORMS }}
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ github.ref_name }}
-          cache-from: |
-            type=registry,ref=${{ env.IMAGE }}:latest
-            type=registry,ref=${{ env.IMAGE }}:${{ github.ref_name }}
-          cache-to: type=inline
+          cache-from: ${{ env.CACHE_FROM }}
+          cache-to: ${{ env.CACHE_TO }}
