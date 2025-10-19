@@ -2,19 +2,26 @@ FROM ubuntu:24.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc python3-pip python3-numpy libpq5 tzdata gettext && \
+    apt-get install -y --no-install-recommends build-essential git python3 python3-dev python3-pip python3-numpy libpq5 tzdata gettext libjpeg8-dev libopenexr-dev libpng-dev libfreetype6-dev && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/
 
+RUN pip download --no-binary OpenImageIO openimageio && \
+    tar -xzf openimageio-*.tar.gz && \
+    cd openimageio-* && \
+    sed -i '/include (testing)/d' CMakeLists.txt && \
+    pip install --config-settings=cmake.build-type=MinSizeRel --config-settings=cmake.args="-DLINKSTATIC=0" --break-system-packages .
+
 WORKDIR /app
 COPY requirements.txt /app/
+RUN arch=$(dpkg --print-architecture) && [ "$arch" = "armhf" ] && sed -i '/ai-edge-litert/d' requirements.txt || true
 RUN MAKEFLAGS="-j$(nproc)" pip install --break-system-packages --no-cache-dir -r requirements.txt
 
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata gettext && \
+    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata gettext libjpeg8 libopenexr-3-1-30 libpng16-16t64 libfreetype6 && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/

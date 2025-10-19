@@ -1,4 +1,3 @@
-from sdr.utils.classifier import Classifier
 from sdr.utils.cleaner import Cleaner
 from sdr.utils.reader import Reader
 import argparse
@@ -17,6 +16,7 @@ def run(*args):
     parser.add_argument("-cls", "--classifier", help="enable classifier", action="store_true")
     args = parser.parse_args(shlex.split(args[0] if len(args) else ""))
 
+    logging.getLogger("Worker").setLevel(logging.INFO)
     logging.getLogger("Reader").setLevel(logging.INFO)
     logging.getLogger("Spectrogram").setLevel(logging.INFO)
     logging.getLogger("Transmission").setLevel(logging.INFO)
@@ -29,7 +29,12 @@ def run(*args):
     if args.cleaner:
         threads.append(Cleaner(args.spectrograms_total_size_gb, args.transmissions_total_size_gb))
     if args.classifier:
-        threads.append(Classifier())
+        try:
+            from sdr.utils.classifier import Classifier
+
+            threads.append(Classifier())
+        except Exception as e:
+            logging.getLogger("Worker").warning("exception: %s" % e)
 
     for t in threads:
         t.start()
