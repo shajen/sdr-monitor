@@ -41,7 +41,6 @@ jobs:
           load: true
           tags: ${{ env.IMAGE }}:test
           cache-from: ${{ env.CACHE_FROM }}
-          cache-to: ${{ env.CACHE_TO }}
       - name: Test
         run: |
           docker run --rm ${{ env.IMAGE }}:test python3 manage.py test
