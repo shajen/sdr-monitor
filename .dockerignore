@@ -1,8 +1,10 @@
+.dockerignore
+.gitignore
 .vscode
 **/.git*
 **/*.md
 **/*.mo
-**/*.pyc
+**/__pycache__
 data
 Dockerfile
 patches
