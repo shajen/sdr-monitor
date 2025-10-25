@@ -30,7 +30,7 @@ COPY --from=builder /usr/local/lib/python3.12/dist-packages/ /usr/local/lib/pyth
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 WORKDIR /app
 COPY . .
-COPY entrypoint /entrypoint
+COPY entrypoint.sh /entrypoint/
 RUN django-admin compilemessages && \
     mkdir -p /app/data && \
     ./gen_decoder.sh
@@ -43,3 +43,4 @@ RUN echo "$(TZ=UTC date +"%Y-%m-%dT%H:%M:%S%z")" | tee /sdr_monitor_build_time &
     echo "$CHANGES" | tee /sdr_monitor_changes
 
 EXPOSE 8000
+ENTRYPOINT [ "/entrypoint/entrypoint.sh" ]
