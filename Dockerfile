@@ -21,7 +21,7 @@ RUN MAKEFLAGS="-j$(nproc)" pip install --break-system-packages --no-cache-dir -r
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata gettext libjpeg8 libopenexr-3-1-30 libpng16-16t64 libfreetype6 && \
+    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata ca-certificates gettext libjpeg8 libopenexr-3-1-30 libpng16-16t64 libfreetype6 && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/

@@ -1,11 +1,11 @@
 var scanners = {};
 
 $(document).ready(function () {
-    if ($('#config').attr('mqtt_path')) {
-        connect((window.location.protocol == 'http:' ? 'ws://' : 'wss://') + window.location.host + $('#config').attr('mqtt_path'));
+    if ($('#config').attr('mqtt_frontend_path')) {
+        connect((window.location.protocol == 'http:' ? 'ws://' : 'wss://') + window.location.host + $('#config').attr('mqtt_frontend_path'));
     }
     else {
-        connect((window.location.protocol == 'http:' ? 'ws://' : 'wss://') + window.location.hostname + ':' + $('#config').attr('mqtt_port'));
+        connect($('#config').attr('mqtt_url'));
     }
     $("#expert_mode_checkbox").change(function () {
         if (this.checked) {

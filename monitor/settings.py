@@ -125,12 +125,10 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MQTT = {
-    "host": os.getenv("MQTT_HOST", "sdr-broker"),
-    "port_tcp": int(os.getenv("MQTT_PORT_TCP", "1883")),
-    "port_ws": int(os.getenv("MQTT_PORT_WS", "9001")),
-    "path": os.getenv("MQTT_PATH", ""),
-    "user": os.getenv("MQTT_USER", "admin"),
-    "password": os.getenv("MQTT_PASSWORD", "password"),
+    "url": os.getenv("MQTT_URL", ""),
+    "user": os.getenv("MQTT_USER", ""),
+    "password": os.getenv("MQTT_PASSWORD", ""),
+    "frontend_path": os.getenv("MQTT_FRONTEND_PATH", ""),
 }
 
 LOG_DIR = os.getenv("LOG_DIR", "")
