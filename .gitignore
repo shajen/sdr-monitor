@@ -4,4 +4,5 @@
 data
 patches
 sdr/decoders/*.py
+static/libs
 tools

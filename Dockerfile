@@ -33,7 +33,8 @@ COPY . .
 COPY entrypoint.sh /entrypoint/
 RUN django-admin compilemessages && \
     mkdir -p /app/data && \
-    ./gen_decoder.sh
+    ./gen_decoder.sh && \
+    ./manage.py runscript download_libs --script-args="-c libs.json -o static/libs/"
 ARG VERSION=""
 ARG COMMIT=""
 ARG CHANGES=""

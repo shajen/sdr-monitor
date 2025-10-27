@@ -1,0 +1,20 @@
+[
+    {"url": "https://cdn.jsdelivr.net/npm/@srexi/purecounterjs@1.5.0/dist/purecounter_vanilla.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/fonts/bootstrap-icons.woff2", "dir":"fonts"},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.1/js/bootstrap.bundle.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/dragscroll/0.0.8/dragscroll.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/7.2.4/css/flag-icons.min.css", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.1/js/glightbox.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.css", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/js-url/2.5.3/url.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/locale/pl.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js", "dir":""},
+    {"url": "https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js", "dir":""}
+]
