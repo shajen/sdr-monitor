@@ -30,11 +30,12 @@ COPY --from=builder /usr/local/lib/python3.12/dist-packages/ /usr/local/lib/pyth
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 WORKDIR /app
 COPY . .
-COPY entrypoint.sh /entrypoint/
+COPY /entrypoint/* /entrypoint/
 RUN django-admin compilemessages && \
     mkdir -p /app/data && \
     ./gen_decoder.sh && \
-    ./manage.py runscript download_libs --script-args="-c libs.json -o static/libs/"
+    ./manage.py runscript download_libs --script-args="-c libs.json -o static/libs/" && \
+    chown -R ubuntu:ubuntu /app/
 ARG VERSION=""
 ARG COMMIT=""
 ARG CHANGES=""
