@@ -5,6 +5,7 @@ from sdr.models import *
 class DeviceAdmin(admin.ModelAdmin):
     list_per_page = 100
     list_display = ("id", "name", "raw_name")
+    readonly_fields = ("raw_name",)
 
 
 class GroupAdmin(admin.ModelAdmin):

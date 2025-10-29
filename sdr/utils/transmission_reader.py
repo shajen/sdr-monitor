@@ -6,6 +6,7 @@ from humanize import naturalsize
 from sdr.models import *
 import logging
 import re
+import sdr.utils.device
 import sdr.utils.file
 import struct
 
@@ -20,7 +21,7 @@ class TransmissionReader:
         try:
             return Device.objects.get(raw_name=name)
         except ObjectDoesNotExist:
-            return Device.objects.create(name=name, raw_name=name)
+            return Device.objects.create(name=sdr.utils.device.convert_raw_to_name_to_pretty_name(name), raw_name=name)
 
     def append_transmission(self, device, dt, begin_frequency, end_frequency, samples, sample_size, sample_type):
         self.__logger.debug(
