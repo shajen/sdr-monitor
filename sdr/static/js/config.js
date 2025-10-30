@@ -7,22 +7,6 @@ $(document).ready(function () {
     else {
         connect($('#config').attr('mqtt_url'));
     }
-    $("#expert_mode_checkbox").change(function () {
-        if (this.checked) {
-            $("#expert_mode_section").show();
-        }
-        else {
-            $("#expert_mode_section").hide();
-        }
-    });
-    $("#help_mode_checkbox").change(function () {
-        if (this.checked) {
-            $(".help_mode_section").show();
-        }
-        else {
-            $(".help_mode_section").hide();
-        }
-    });
 });
 
 function connect(url) {
@@ -32,6 +16,7 @@ function connect(url) {
         let command = values[1];
         let scanner_id = values[2];
         if (command == 'status') {
+            $("#loading_section").hide();
             if (!(scanner_id in scanners)) {
                 scanners[scanner_id] = jQuery.parseJSON(new TextDecoder().decode(message));
                 addScanner(scanners[scanner_id]);
@@ -109,6 +94,8 @@ function addScanner(scanner) {
 }
 
 function selectScanner(scanner) {
+    $("#scanner_section").show();
+    $("#device_section").hide();
     updateInput(scanner, '#transmission_tunning_step', ['recording', 'step']);
     updateInput(scanner, '#transmission_max_noise_time_ms', ['recording', 'max_noise_time_ms']);
     updateInput(scanner, "#transmission_min_time_ms", ['recording', 'min_time_ms']);
@@ -213,6 +200,7 @@ function addIgnoredFrequency(ranges, range) {
 }
 
 function selectDevice(device) {
+    $("#device_section").show();
     let setInputsEnabled = function (enabled) {
         $("#device_sample_rate").prop("disabled", !enabled);
         $("#devices :input").prop("disabled", !enabled);
