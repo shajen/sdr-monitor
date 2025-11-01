@@ -48,7 +48,6 @@ function onConnect(client) {
         for (const [scanner_id, value] of Object.entries(scanners)) {
             client.publish("sdr/config/" + scanner_id, JSON.stringify(value));
         }
-        $("#save").prop("disabled", true);
         $("#save").html("<span class=\"spinner-border spinner-border-sm\" aria-hidden=\"true\"></span><span role=\"status\">Loading...</span>");
     });
 }
@@ -96,6 +95,7 @@ function addScanner(scanner) {
 function selectScanner(scanner) {
     $("#scanner_section").show();
     $("#device_section").hide();
+    $("#save").prop("disabled", false);
     updateInput(scanner, '#transmission_tunning_step', ['recording', 'step']);
     updateInput(scanner, '#transmission_max_noise_time_ms', ['recording', 'max_noise_time_ms']);
     updateInput(scanner, "#transmission_min_time_ms", ['recording', 'min_time_ms']);
@@ -113,30 +113,21 @@ function selectScanner(scanner) {
     scanner['ignored_frequencies'].forEach(function (range) {
         addIgnoredFrequency(scanner['ignored_frequencies'], range);
     });
-    $("#new_ignored_frequency").prop("disabled", false);
     $("#new_ignored_frequency").unbind("click");
     $("#new_ignored_frequency").click(function () {
         scanner['ignored_frequencies'].push({ 'frequency': 0, 'bandwidth': 0 });
         let range = scanner['ignored_frequencies'][scanner['ignored_frequencies'].length - 1];
         addIgnoredFrequency(scanner['ignored_frequencies'], range);
-        $("#save").prop("disabled", false);
     });
-    $("#device_enabled").prop("disabled", true);
-    $("#device_sample_rate").prop("disabled", true);
-    $("#new_scanned_frequency").prop("disabled", true);
-    $("#start_recording_level").prop("disabled", true);
-    $("#stop_recording_level").prop("disabled", true);
 }
 
 function updateInput(scanner, element_id, keys, type = 'integer') {
     if (2 <= keys.length) { $(element_id).val(scanner[keys[0]][keys[1]]); }
     else { $(element_id).val(scanner[keys[0]]); }
-    $(element_id).prop("disabled", false);
     $(element_id).change(function () {
         let value = parseValue($(this).val(), type)
         if (2 <= keys.length) { scanner[keys[0]][keys[1]] = value; }
         else { scanner[keys[0]] = value; }
-        $("#save").prop("disabled", false);
     });
 }
 
@@ -171,12 +162,10 @@ function addDevice(device) {
 function updateDeviceInput(device, element_id, keys, type = 'integer') {
     if (2 <= keys.length) { $(element_id).val(device[keys[0]][keys[1]]); }
     else { $(element_id).val(device[keys[0]]); }
-    $(element_id).prop("disabled", false);
     $(element_id).change(function () {
         let value = parseValue($(this).val(), type)
         if (2 <= keys.length) { device[keys[0]][keys[1]] = value; }
         else { device[keys[0]] = value; }
-        $("#save").prop("disabled", false);
     });
 }
 
@@ -184,38 +173,32 @@ function addIgnoredFrequency(ranges, range) {
     let tr = document.createElement("tr");
     $(tr).append(createInput(range['frequency'], function (value) {
         range['frequency'] = value;
-        $("#save").prop("disabled", false);
     }));
     $(tr).append(createInput(range['bandwidth'], function (value) {
         range['bandwidth'] = value;
-        $("#save").prop("disabled", false);
     }));
     $(tr).append(createButton("Delete", function () {
         let index = Array.prototype.indexOf.call($(tr).parent().children(), tr) - 1;
         ranges.splice(index, 1);
         tr.remove();
-        $("#save").prop("disabled", false);
     }));
     $("#ignored_frequencies").append(tr);
 }
 
 function selectDevice(device) {
-    $("#device_section").show();
     let setInputsEnabled = function (enabled) {
-        $("#device_sample_rate").prop("disabled", !enabled);
-        $("#devices :input").prop("disabled", !enabled);
-        $("#gains :input").prop("disabled", !enabled);
-        $("#start_recording_level").prop("disabled", !enabled);
-        $("#stop_recording_level").prop("disabled", !enabled);
-    };
+        if (enabled)
+            $("#device_settings").show();
+        else
+            $("#device_settings").hide();
+    }
 
+    $("#device_section").show();
     $("#device_enabled").prop("checked", device["enabled"]);
-    $("#device_enabled").prop("disabled", false);
     $("#device_enabled").unbind("click");
     $("#device_enabled").click(function () {
         device['enabled'] = $(this).is(':checked');
         setInputsEnabled($(this).is(':checked'));
-        $("#save").prop("disabled", false);
     });
 
     $("#device_sample_rate").unbind("click");
@@ -226,7 +209,6 @@ function selectDevice(device) {
     $("#device_sample_rate").val(device['sample_rate']);
     $("#device_sample_rate").change(function () {
         device['sample_rate'] = parseInt($(this).val());
-        $("#save").prop("disabled", false);
     });
 
     $("#devices").find("tr:gt(0)").remove();
@@ -244,7 +226,6 @@ function selectDevice(device) {
         device['ranges'].push({ 'start': 0, 'stop': 0 });
         let range = device['ranges'][device['ranges'].length - 1];
         addScannedFrequency(device['ranges'], range);
-        $("#save").prop("disabled", false);
     });
 
     updateDeviceInput(device, '#start_recording_level', ['start_recording_level']);
@@ -264,7 +245,6 @@ function addScannedFrequency(ranges, range) {
         let index = Array.prototype.indexOf.call($(tr).parent().children(), tr) - 1;
         ranges.splice(index, 1);
         tr.remove();
-        $("#save").prop("disabled", false);
     }));
     $("#devices").append(tr);
 }
@@ -291,7 +271,6 @@ function createInput(value, callback, type = 'integer') {
     $(i).val(value);
     $(i).change(function () {
         callback(parseValue($(this).val(), type));
-        $("#save").prop("disabled", false);
     });
     td.append(i);
     return td;

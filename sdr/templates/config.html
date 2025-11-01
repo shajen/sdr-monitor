@@ -79,27 +79,33 @@
             </div>
             <div class="col-md">
                 <div id="device_section" style="display: none;">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#device-tab1" type="button" role="tab">Main</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab2" type="button" role="tab">Gains</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab3" type="button" role="tab">Recording sensitivity</button>
-                        </li>
-                    </ul>
+                    <h5>Device enabled</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="device_enabled" autocomplete="off">
+                    </div>
+                    <div id="device_settings">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#device-tab1" type="button" role="tab">Main</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab2" type="button" role="tab">Gains</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab3" type="button" role="tab">Recording sensitivity</button>
+                            </li>
+                        </ul>
 
-                    <div class="tab-content">
-                        <div class="tab-pane show active" id="device-tab1" role="tabpanel">
-                            {% include "config_device_main.html" %}
-                        </div>
-                        <div class="tab-pane" id="device-tab2" role="tabpanel">
-                            {% include "config_device_gains.html" %}
-                        </div>
-                        <div class="tab-pane" id="device-tab3" role="tabpanel">
-                            {% include "config_device_level.html" %}
+                        <div class="tab-content">
+                            <div class="tab-pane show active" id="device-tab1" role="tabpanel">
+                                {% include "config_device_main.html" %}
+                            </div>
+                            <div class="tab-pane" id="device-tab2" role="tabpanel">
+                                {% include "config_device_gains.html" %}
+                            </div>
+                            <div class="tab-pane" id="device-tab3" role="tabpanel">
+                                {% include "config_device_level.html" %}
+                            </div>
                         </div>
                     </div>
                 </div>
