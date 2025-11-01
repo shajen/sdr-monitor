@@ -104,6 +104,10 @@ function selectScanner(scanner) {
     updateInput(scanner, "#console_log_level", ['output', 'console_log_level'], 'string');
     updateInput(scanner, "#file_log_level", ['output', 'file_log_level'], 'string');
     updateInput(scanner, "#workers", ['workers']);
+    updateInput(scanner, '#latitude', ['position', 'latitude'], 'float');
+    updateInput(scanner, '#longitude', ['position', 'longitude'], 'float');
+    updateInput(scanner, '#altitude', ['position', 'altitude'], 'float');
+    updateInput(scanner, '#api_key', ['api_key'], 'string');
 
     $("#device_selector").empty();
     $("#ignored_frequencies").find("tr:gt(0)").remove();
@@ -118,16 +122,6 @@ function selectScanner(scanner) {
         scanner['ignored_frequencies'].push({ 'frequency': 0, 'bandwidth': 0 });
         let range = scanner['ignored_frequencies'][scanner['ignored_frequencies'].length - 1];
         addIgnoredFrequency(scanner['ignored_frequencies'], range);
-    });
-}
-
-function updateInput(scanner, element_id, keys, type = 'integer') {
-    if (2 <= keys.length) { $(element_id).val(scanner[keys[0]][keys[1]]); }
-    else { $(element_id).val(scanner[keys[0]]); }
-    $(element_id).change(function () {
-        let value = parseValue($(this).val(), type)
-        if (2 <= keys.length) { scanner[keys[0]][keys[1]] = value; }
-        else { scanner[keys[0]] = value; }
     });
 }
 
@@ -155,17 +149,15 @@ function addDevice(device) {
     $(d).append(l);
 
     $("#device_selector").append(d);
-    $("#devices").find("tr:gt(0)").remove();
-    $("#gains").find("tr:gt(0)").remove();
 }
 
-function updateDeviceInput(device, element_id, keys, type = 'integer') {
-    if (2 <= keys.length) { $(element_id).val(device[keys[0]][keys[1]]); }
-    else { $(element_id).val(device[keys[0]]); }
+function updateInput(element, element_id, keys, type = 'integer') {
+    if (2 <= keys.length) { $(element_id).val(element[keys[0]][keys[1]]); }
+    else { $(element_id).val(element[keys[0]]); }
     $(element_id).change(function () {
         let value = parseValue($(this).val(), type)
-        if (2 <= keys.length) { device[keys[0]][keys[1]] = value; }
-        else { device[keys[0]] = value; }
+        if (2 <= keys.length) { element[keys[0]][keys[1]] = value; }
+        else { element[keys[0]] = value; }
     });
 }
 
@@ -212,10 +204,14 @@ function selectDevice(device) {
     });
 
     $("#devices").find("tr:gt(0)").remove();
-
+    $("#sattelites").find("tr:gt(1)").remove();
     $("#gains").find("tr:gt(0)").remove();
+
     device['ranges'].forEach(function (range) {
         addScannedFrequency(device['ranges'], range);
+    });
+    device['sattelites'].forEach(function (sattelite) {
+        addSattelite(device['sattelites'], sattelite);
     });
     device['gains'].forEach(function (gain) {
         addGain(gain);
@@ -228,8 +224,15 @@ function selectDevice(device) {
         addScannedFrequency(device['ranges'], range);
     });
 
-    updateDeviceInput(device, '#start_recording_level', ['start_recording_level']);
-    updateDeviceInput(device, '#stop_recording_level', ['stop_recording_level']);
+    $("#new_sattelite").unbind("click");
+    $("#new_sattelite").click(function () {
+        device['sattelites'].push({ 'id': 0, 'name': '', frequency: 0, bandwidth: 0, modulation: '' });
+        let sattelite = device['sattelites'][device['sattelites'].length - 1];
+        addSattelite(device['sattelites'], sattelite);
+    });
+
+    updateInput(device, '#start_recording_level', ['start_recording_level']);
+    updateInput(device, '#stop_recording_level', ['stop_recording_level']);
     setInputsEnabled(device["enabled"]);
 }
 
@@ -247,6 +250,32 @@ function addScannedFrequency(ranges, range) {
         tr.remove();
     }));
     $("#devices").append(tr);
+}
+
+function addSattelite(sattelites, sattelite) {
+    let tr = document.createElement("tr");
+    $(tr).append(createInput(sattelite['id'], function (value) {
+        sattelite['id'] = value;
+    }));
+    $(tr).append(createInput(sattelite['name'], function (value) {
+        sattelite['name'] = value;
+    }));
+    $(tr).append(createInput(sattelite['frequency'], function (value) {
+        sattelite['frequency'] = value;
+    }));
+    $(tr).append(createInput(sattelite['bandwidth'], function (value) {
+        sattelite['bandwidth'] = value;
+    }));
+    $(tr).append(createInput(sattelite['modulation'], function (value) {
+        sattelite['modulation'] = value;
+    }));
+    $(tr).append(createButton("Delete", function () {
+        let index = Array.prototype.indexOf.call($(tr).parent().children(), tr) - 1;
+        index -= 1; // because help
+        sattelites.splice(index, 1);
+        tr.remove();
+    }));
+    $("#sattelites").append(tr);
 }
 
 function addGain(gain) {

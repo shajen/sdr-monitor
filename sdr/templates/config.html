@@ -62,6 +62,9 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#scanner-tab2" type="button" role="tab">Other</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#scanner-tab3" type="button" role="tab">Sattelites</button>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -70,6 +73,9 @@
                     </div>
                     <div class="tab-pane" id="scanner-tab2" role="tabpanel">
                         {% include "config_scanner_other.html" %}
+                    </div>
+                    <div class="tab-pane" id="scanner-tab3" role="tabpanel">
+                        {% include "config_scanner_sattelites.html" %}
                     </div>
                 </div>
             </div>
@@ -91,6 +97,9 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab3" type="button" role="tab">Gains</button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab4" type="button" role="tab">Sattelites</button>
+                        </li>
                     </ul>
 
                     <div class="tab-content">
@@ -102,6 +111,9 @@
                         </div>
                         <div class="tab-pane" id="device-tab3" role="tabpanel">
                             {% include "config_device_gains.html" %}
+                        </div>
+                        <div class="tab-pane" id="device-tab4" role="tabpanel">
+                            {% include "config_device_sattelites.html" %}
                         </div>
                     </div>
                 </div>

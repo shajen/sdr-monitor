@@ -1,10 +1,12 @@
 from common.helpers import *
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
 from django.db.models import F, Count
 from django.db.models.functions import TruncSecond, TruncDate, Length
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.timezone import localtime
 from sdr.models import *
@@ -15,6 +17,7 @@ import math
 import monitor.settings
 import numpy as np
 import sdr.drawer
+import sdr.utils.satelistes
 import uuid
 
 
@@ -218,3 +221,36 @@ def config(request):
 @login_required()
 def logs(request):
     return common.utils.files.get_directory_as_archive_response(settings.LOG_DIR, "logs")
+
+
+class SatellitesForm(forms.Form):
+    api_key = forms.CharField(max_length=100)
+    latitude = forms.FloatField()
+    longitude = forms.FloatField()
+    altitude = forms.FloatField()
+    satellites = forms.CharField()
+
+    def clean_satellites(self):
+        raw = self.cleaned_data["satellites"]
+        try:
+            ids = [int(id) for id in raw.split(",") if id.strip()]
+        except ValueError:
+            raise forms.ValidationError("Invalid satellites")
+        return ids
+
+
+@login_required()
+def satellites(request):
+    form = SatellitesForm(request.GET)
+    if form.is_valid():
+        reader = sdr.utils.satelistes.SatellitesFlightReader(
+            form.cleaned_data["api_key"],
+            form.cleaned_data["latitude"],
+            form.cleaned_data["longitude"],
+            form.cleaned_data["altitude"],
+            False,
+        )
+        flights = reader.get_visible_satellites_flights([{"id": id, "name": "", "frequency": 0, "bandwidth": 0} for id in form.cleaned_data["satellites"]])
+        return JsonResponse(flights, safe=False)
+    else:
+        return JsonResponse([], safe=False)
