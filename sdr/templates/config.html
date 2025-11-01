@@ -1,4 +1,4 @@
-{% extends "generic/simple_big.html" %}
+{% extends "generic/simple_small.html" %}
 {% load i18n %}
 {% load sdr_filters %}
 {% load static %}
@@ -30,95 +30,90 @@
 <div id="config" style="display: none;" mqtt_url="{{ mqtt.url }}" mqtt_user="{{ mqtt.user }}" mqtt_password="{{ mqtt.password }}" mqtt_frontend_path="{{ mqtt.frontend_path }}">
 </div>
 <div class="row mt-2">
-    <div class="col-lg-2"></div>
+    <div class="row" id="loading_section">
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+            </div>
+            <div>
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Scanner settings:</h3>
+            <div id="scanner_selector">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>Sdr device settings:</h3>
+            <div id="device_selector">
+            </div>
+        </div>
+    </div>
+    <hr class="hr hr-blurry" />
+    <div class="row">
+        <div class="col-md-6">
+            <div id="scanner_section" style="display: none;">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#scanner-tab1" type="button" role="tab">Ignored frequencies</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#scanner-tab2" type="button" role="tab">Other</button>
+                    </li>
+                </ul>
 
-    <div class="col-lg-8">
-        <div class="row" id="loading_section">
-            <div class="text-center">
-                <div class="spinner-border" role="status">
-                </div>
-                <div>
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md">
-                <h3>Scanner settings:</h3>
-                <div id="scanner_selector">
-                </div>
-            </div>
-            <div class="col-md">
-                <h3>Sdr device settings:</h3>
-                <div id="device_selector">
+                <div class="tab-content">
+                    <div class="tab-pane show active" id="scanner-tab1" role="tabpanel">
+                        {% include "config_scanner_ignored_frequencies.html" %}
+                    </div>
+                    <div class="tab-pane" id="scanner-tab2" role="tabpanel">
+                        {% include "config_scanner_other.html" %}
+                    </div>
                 </div>
             </div>
         </div>
-        <hr class="hr hr-blurry" />
-        <div class="row">
-            <div class="col-md">
-                <div id="scanner_section" style="display: none;">
+        <div class="col-md-6">
+            <div id="device_section" style="display: none;">
+                <h5>Device enabled</h5>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="device_enabled" autocomplete="off">
+                </div>
+                <div id="device_settings">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#scanner-tab1" type="button" role="tab">Ignored frequencies</button>
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#device-tab1" type="button" role="tab">Main</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#scanner-tab2" type="button" role="tab">Other</button>
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab2" type="button" role="tab">Gains</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab3" type="button" role="tab">Recording sensitivity</button>
                         </li>
                     </ul>
 
                     <div class="tab-content">
-                        <div class="tab-pane show active" id="scanner-tab1" role="tabpanel">
-                            {% include "config_scanner_ignored_frequencies.html" %}
+                        <div class="tab-pane show active" id="device-tab1" role="tabpanel">
+                            {% include "config_device_main.html" %}
                         </div>
-                        <div class="tab-pane" id="scanner-tab2" role="tabpanel">
-                            {% include "config_scanner_other.html" %}
+                        <div class="tab-pane" id="device-tab2" role="tabpanel">
+                            {% include "config_device_gains.html" %}
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md">
-                <div id="device_section" style="display: none;">
-                    <h5>Device enabled</h5>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="device_enabled" autocomplete="off">
-                    </div>
-                    <div id="device_settings">
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#device-tab1" type="button" role="tab">Main</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab2" type="button" role="tab">Gains</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab3" type="button" role="tab">Recording sensitivity</button>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content">
-                            <div class="tab-pane show active" id="device-tab1" role="tabpanel">
-                                {% include "config_device_main.html" %}
-                            </div>
-                            <div class="tab-pane" id="device-tab2" role="tabpanel">
-                                {% include "config_device_gains.html" %}
-                            </div>
-                            <div class="tab-pane" id="device-tab3" role="tabpanel">
-                                {% include "config_device_level.html" %}
-                            </div>
+                        <div class="tab-pane" id="device-tab3" role="tabpanel">
+                            {% include "config_device_level.html" %}
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md">
-                <div class="d-grid gap-2">
-                    <button id="save" type="button" class="btn btn-primary" disabled="disabled" autocomplete="off">Save</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2"></div>
+    <div class="row">
+        <div class="col-md">
+            <div class="d-grid gap-2">
+                <button id="save" type="button" class="btn btn-primary" disabled="disabled" autocomplete="off">Save</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -119,6 +119,7 @@ FORMAT_MODULE_PATH = ["common.formats"]
 LANGUAGE_CODE = "en-us"
 LANGUAGES = [("en", "English")]
 LOCALE_PATHS = [os.path.join(BASE_DIR, "locale")]
+TITLE_CLASS = "m-2 p-0"
 TIME_ZONE = os.getenv("TZ", "UTC")
 USE_I18N = True
 USE_TZ = True
