@@ -70,6 +70,7 @@ class SatellitesFlightReader:
                     "magnitude": magnitude,
                     "frequency": satellite["frequency"],
                     "bandwidth": satellite["bandwidth"],
+                    "modulation": satellite["modulation"],
                 }
             )
         return results

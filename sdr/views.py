@@ -263,6 +263,7 @@ def satellites(request):
                     "name": satellite["name"],
                     "frequency": 0,
                     "bandwidth": 0,
+                    "modulation": "",
                 }
                 for satellite in form.cleaned_data["satellites"]
             ],
