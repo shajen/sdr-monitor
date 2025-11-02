@@ -1,3 +1,4 @@
+from sdr.utils.satellites_manager import SatellitesManager
 from sdr.utils.spectogram_reader import SpectrogramReader
 from sdr.utils.transmission_reader import TransmissionReader
 from urllib.parse import urlparse
@@ -30,9 +31,10 @@ class Reader(threading.Thread):
         self.__parsers = []
         self.__parsers.append(SpectrogramReader())
         self.__parsers.append(TransmissionReader())
+        self.__parsers.append(SatellitesManager())
 
         (host, port, path, transport, use_ws, use_tls) = parse_mqtt_url(config["url"])
-        self.__client = paho.mqtt.client.Client(paho.mqtt.client.CallbackAPIVersion.VERSION1, client_id="monitor", transport=transport)
+        self.__client = paho.mqtt.client.Client(paho.mqtt.client.CallbackAPIVersion.VERSION1, client_id="sdr-monitor", transport=transport)
         if use_tls:
             self.__client.tls_set(tls_version=ssl.PROTOCOL_TLS_CLIENT)
         if use_ws:
@@ -55,6 +57,7 @@ class Reader(threading.Thread):
         self.__client.subscribe("sdr/+/spectrogram")
         self.__client.subscribe("sdr/+/transmission")
         self.__client.subscribe("sdr/+/transmission/+")
+        self.__client.subscribe("sdr/satellites/+/+/get")
 
     def on_message(client, userdata, message):
         self = userdata

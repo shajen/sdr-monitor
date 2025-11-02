@@ -121,6 +121,7 @@ LANGUAGES = [("en", "English")]
 LOCALE_PATHS = [os.path.join(BASE_DIR, "locale")]
 TITLE_CLASS = "m-2 p-0"
 TIME_ZONE = os.getenv("TZ", "UTC")
+SATELLITES_CACHE_DIR = os.path.join(BASE_DIR, "cache", "satellites")
 USE_I18N = True
 USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

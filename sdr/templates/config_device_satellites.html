@@ -1,0 +1,23 @@
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="satellites">
+        <tr>
+            <td colspan="5">
+                <p><small class="form-text text-muted">Enter satellites you want to track. Search <a href="https://www.n2yo.com/passes/amateur-radio.php">here</a>. </small></p>
+                <p><small class="form-text text-muted">Remember that the scanner track only <span class="badge bg-danger">flights with good visibility</span>
+                        not all of them!</small></p>
+                <p><small class="form-text text-muted">Remember to set your location and API key in the tab on the left.</small></p>
+            </td>
+        </tr>
+        <tr>
+            <th>NORAD ID</th>
+            <th>Name</th>
+            <th>Frequency [Hz]</th>
+            <th>Bandwidth [Hz]</th>
+            <th>Modulation</th>
+            <th><button id="new_satellite" type="button" class="btn btn-success" autocomplete="off">New</button></th>
+        </tr>
+    </table>
+</div>
+<div class="text-center">
+    <button id="preview_satellites" type="button" class="btn btn-primary" autocomplete="off">Preview of upcoming satellites flights</button>
+</div>

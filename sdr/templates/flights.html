@@ -1,0 +1,24 @@
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <tr>
+            <th>NORAD ID</th>
+            <th>Name</th>
+            <th>Begin</th>
+            <th>End</th>
+            <th>Elevation</th>
+            <th>Magnitude</th>
+            <th>Duration</th>
+        </tr>
+        {% for flight in flights %}
+        <tr>
+            <td>{{ flight.id }}</td>
+            <td>{{ flight.name }}</td>
+            <td>{{ flight.begin }}</td>
+            <td>{{ flight.end }}</td>
+            <td>{{ flight.elevation }}</td>
+            <td>{{ flight.magnitude }}</td>
+            <td>{{ flight.duration }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

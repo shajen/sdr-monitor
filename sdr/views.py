@@ -1,20 +1,24 @@
 from common.helpers import *
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
 from django.db.models import F, Count
 from django.db.models.functions import TruncSecond, TruncDate, Length
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.timezone import localtime
 from sdr.models import *
 from sdr.signals import *
+import common.helpers
 import common.utils.files
 import common.utils.filters
 import math
 import monitor.settings
 import numpy as np
 import sdr.drawer
+import sdr.utils.satellites
 import uuid
 
 
@@ -218,3 +222,56 @@ def config(request):
 @login_required()
 def logs(request):
     return common.utils.files.get_directory_as_archive_response(settings.LOG_DIR, "logs")
+
+
+class SatellitesForm(forms.Form):
+    api_key = forms.CharField(max_length=100)
+    latitude = forms.FloatField()
+    longitude = forms.FloatField()
+    altitude = forms.FloatField()
+    satellites = forms.CharField()
+
+    def clean_satellites(self):
+        try:
+            raw = self.cleaned_data["satellites"]
+            satellites = []
+            for satellite in raw.split(","):
+                if satellite.strip():
+                    data = satellite.split(";")
+                    satellites.append({"id": data[0], "name": data[1]})
+            return satellites
+        except ValueError:
+            raise forms.ValidationError("Invalid satellites")
+
+
+@login_required()
+def satellites(request):
+    is_json = common.helpers.is_json_request(request)
+    form = SatellitesForm(request.GET)
+    if form.is_valid():
+        reader = sdr.utils.satellites.SatellitesFlightReader(
+            form.cleaned_data["api_key"],
+            form.cleaned_data["latitude"],
+            form.cleaned_data["longitude"],
+            form.cleaned_data["altitude"],
+            True,
+        )
+        flights = reader.get_visible_satellites_flights(
+            [
+                {
+                    "id": satellite["id"],
+                    "name": satellite["name"],
+                    "frequency": 0,
+                    "bandwidth": 0,
+                }
+                for satellite in form.cleaned_data["satellites"]
+            ],
+            is_json,
+        )
+    else:
+        flights = []
+
+    if is_json:
+        return JsonResponse(flights, safe=False)
+    else:
+        return render(request, "flights.html", {"flights": flights})

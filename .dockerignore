@@ -5,6 +5,7 @@
 **/*.md
 **/*.mo
 **/__pycache__
+cache
 data
 Dockerfile
 patches

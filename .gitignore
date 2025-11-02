@@ -1,6 +1,7 @@
 .vscode
 *.mo
 *.pyc
+cache
 data
 patches
 sdr/decoders/*.py

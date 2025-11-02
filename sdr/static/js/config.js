@@ -104,11 +104,15 @@ function selectScanner(scanner) {
     updateInput(scanner, "#console_log_level", ['output', 'console_log_level'], 'string');
     updateInput(scanner, "#file_log_level", ['output', 'file_log_level'], 'string');
     updateInput(scanner, "#workers", ['workers']);
+    updateInput(scanner, '#latitude', ['position', 'latitude'], 'string');
+    updateInput(scanner, '#longitude', ['position', 'longitude'], 'string');
+    updateInput(scanner, '#altitude', ['position', 'altitude']);
+    updateInput(scanner, '#api_key', ['api_key'], 'string');
 
     $("#device_selector").empty();
     $("#ignored_frequencies").find("tr:gt(0)").remove();
     scanner['devices'].forEach(function (device) {
-        addDevice(device);
+        addDevice(scanner, device);
     });
     scanner['ignored_frequencies'].forEach(function (range) {
         addIgnoredFrequency(scanner['ignored_frequencies'], range);
@@ -121,17 +125,7 @@ function selectScanner(scanner) {
     });
 }
 
-function updateInput(scanner, element_id, keys, type = 'integer') {
-    if (2 <= keys.length) { $(element_id).val(scanner[keys[0]][keys[1]]); }
-    else { $(element_id).val(scanner[keys[0]]); }
-    $(element_id).change(function () {
-        let value = parseValue($(this).val(), type)
-        if (2 <= keys.length) { scanner[keys[0]][keys[1]] = value; }
-        else { scanner[keys[0]] = value; }
-    });
-}
-
-function addDevice(device) {
+function addDevice(scanner, device) {
     let d = document.createElement("div");
     $(d).addClass('form-check');
 
@@ -140,7 +134,7 @@ function addDevice(device) {
     $(i).prop("type", "radio");
     $(i).prop("name", "device_selector");
     $(i).click(function () {
-        selectDevice(device);
+        selectDevice(scanner, device);
     });
 
     let l = document.createElement("label");
@@ -148,24 +142,35 @@ function addDevice(device) {
     $(l).append(device["driver"] + " - " + device["serial"]);
     $(l).click(function () {
         $(i).prop('checked', true);
-        selectDevice(device);
+        selectDevice(scanner, device);
     });
 
     $(d).append(i);
     $(d).append(l);
 
     $("#device_selector").append(d);
-    $("#devices").find("tr:gt(0)").remove();
-    $("#gains").find("tr:gt(0)").remove();
 }
 
-function updateDeviceInput(device, element_id, keys, type = 'integer') {
-    if (2 <= keys.length) { $(element_id).val(device[keys[0]][keys[1]]); }
-    else { $(element_id).val(device[keys[0]]); }
+function setValue(element, keys, value) {
+    let current = element;
+    for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+        if (!(key in current) || typeof current[key] !== 'object' || current[key] === null) {
+            current[key] = {};
+        }
+        current = current[key];
+    }
+    current[keys[keys.length - 1]] = value;
+}
+
+function updateInput(element, element_id, keys, type = 'integer') {
+    let value = element;
+    keys.forEach(function (key) {
+        value = value[key];
+    });
+    $(element_id).val(value);
     $(element_id).change(function () {
-        let value = parseValue($(this).val(), type)
-        if (2 <= keys.length) { device[keys[0]][keys[1]] = value; }
-        else { device[keys[0]] = value; }
+        setValue(element, keys, parseValue($(this).val(), type));
     });
 }
 
@@ -185,7 +190,7 @@ function addIgnoredFrequency(ranges, range) {
     $("#ignored_frequencies").append(tr);
 }
 
-function selectDevice(device) {
+function selectDevice(scanner, device) {
     let setInputsEnabled = function (enabled) {
         if (enabled)
             $("#device_settings").show();
@@ -212,10 +217,14 @@ function selectDevice(device) {
     });
 
     $("#devices").find("tr:gt(0)").remove();
-
+    $("#satellites").find("tr:gt(1)").remove();
     $("#gains").find("tr:gt(0)").remove();
+
     device['ranges'].forEach(function (range) {
         addScannedFrequency(device['ranges'], range);
+    });
+    device['satellites'].forEach(function (satellite) {
+        addSatellite(device['satellites'], satellite);
     });
     device['gains'].forEach(function (gain) {
         addGain(gain);
@@ -228,8 +237,19 @@ function selectDevice(device) {
         addScannedFrequency(device['ranges'], range);
     });
 
-    updateDeviceInput(device, '#start_recording_level', ['start_recording_level']);
-    updateDeviceInput(device, '#stop_recording_level', ['stop_recording_level']);
+    $("#new_satellite").unbind("click");
+    $("#new_satellite").click(function () {
+        device['satellites'].push({ 'id': 0, 'name': '', frequency: 0, bandwidth: 0, modulation: '' });
+        let satellite = device['satellites'][device['satellites'].length - 1];
+        addSatellite(device['satellites'], satellite);
+    });
+    $("#preview_satellites").unbind("click");
+    $("#preview_satellites").click(function () {
+        previewSatellites(scanner, device);
+    });
+
+    updateInput(device, '#start_recording_level', ['start_recording_level']);
+    updateInput(device, '#stop_recording_level', ['stop_recording_level']);
     setInputsEnabled(device["enabled"]);
 }
 
@@ -247,6 +267,32 @@ function addScannedFrequency(ranges, range) {
         tr.remove();
     }));
     $("#devices").append(tr);
+}
+
+function addSatellite(satellites, satellite) {
+    let tr = document.createElement("tr");
+    $(tr).append(createInput(satellite['id'], function (value) {
+        satellite['id'] = value;
+    }));
+    $(tr).append(createInput(satellite['name'], function (value) {
+        satellite['name'] = value;
+    }, "string"));
+    $(tr).append(createInput(satellite['frequency'], function (value) {
+        satellite['frequency'] = value;
+    }));
+    $(tr).append(createInput(satellite['bandwidth'], function (value) {
+        satellite['bandwidth'] = value;
+    }));
+    $(tr).append(createInputSelect(satellite['modulation'], function (value) {
+        satellite['modulation'] = value;
+    }, "", ["AM", "FM", "Other"], "string"));
+    $(tr).append(createButton("Delete", function () {
+        let index = Array.prototype.indexOf.call($(tr).parent().children(), tr) - 1;
+        index -= 1; // because help
+        satellites.splice(index, 1);
+        tr.remove();
+    }));
+    $("#satellites").append(tr);
 }
 
 function addGain(gain) {
@@ -276,6 +322,31 @@ function createInput(value, callback, type = 'integer') {
     return td;
 }
 
+function createInputSelect(value, callback, label, options, type = 'integer') {
+    let td = document.createElement("td");
+    let i = document.createElement("select");
+    let labelOption = document.createElement("option");
+    $(labelOption).html(label);
+    $(labelOption).attr('selected', '');
+    $(labelOption).attr('disabled', '');
+    $(labelOption).attr('hidden', '');
+    i.append(labelOption);
+    options.forEach(function (option) {
+        let o = document.createElement("option");
+        $(o).html(option);
+        $(o).val(option);
+        i.append(o);
+    });
+    $(i).val(value);
+    $(i).addClass("form-select");
+    $(i).addClass("form-control");
+    $(i).change(function () {
+        callback(parseValue($(this).val(), type));
+    });
+    td.append(i);
+    return td;
+}
+
 function createButton(value, callback) {
     let td = document.createElement("td");
     let b = document.createElement("button");
@@ -286,4 +357,25 @@ function createButton(value, callback) {
     $(b).click(callback);
     td.append(b)
     return td;
+}
+
+function previewSatellites(scanner, device) {
+    let satellites = $.map(device['satellites'], function (value) {
+        return value['id'] + ";" + value['name'];
+    });
+    $.ajax({
+        dataType: "html",
+        data: {
+            "api_key": scanner['api_key'],
+            "latitude": scanner['position']['latitude'],
+            "longitude": scanner['position']['longitude'],
+            "altitude": scanner['position']['altitude'],
+            "satellites": satellites.join(","),
+        },
+        url: "/sdr/satellites/",
+        success: function (data) {
+            $("#preview_flights_content").html(data);
+            $('#preview_flights').modal('show');
+        }
+    });
 }

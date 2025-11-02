@@ -27,6 +27,22 @@
     </div>
 </div>
 
+<div class="modal modal-lg fade" id="preview_flights" tabindex="-1" aria-labelledby="previewFlightsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewFlightsModalLabel">Upcoming satellites flights in next 7 days</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="preview_flights_content" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="config" style="display: none;" mqtt_url="{{ mqtt.url }}" mqtt_user="{{ mqtt.user }}" mqtt_password="{{ mqtt.password }}" mqtt_frontend_path="{{ mqtt.frontend_path }}">
 </div>
 <div class="row mt-2">
@@ -62,6 +78,9 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#scanner-tab2" type="button" role="tab">Other</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#scanner-tab3" type="button" role="tab">Satellites</button>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -70,6 +89,9 @@
                     </div>
                     <div class="tab-pane" id="scanner-tab2" role="tabpanel">
                         {% include "config_scanner_other.html" %}
+                    </div>
+                    <div class="tab-pane" id="scanner-tab3" role="tabpanel">
+                        {% include "config_scanner_satellites.html" %}
                     </div>
                 </div>
             </div>
@@ -91,6 +113,9 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab3" type="button" role="tab">Gains</button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab4" type="button" role="tab">Satellites</button>
+                        </li>
                     </ul>
 
                     <div class="tab-content">
@@ -103,12 +128,15 @@
                         <div class="tab-pane" id="device-tab3" role="tabpanel">
                             {% include "config_device_gains.html" %}
                         </div>
+                        <div class="tab-pane" id="device-tab4" role="tabpanel">
+                            {% include "config_device_satellites.html" %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row mt-2">
         <div class="col-md">
             <div class="d-grid gap-2">
                 <button id="save" type="button" class="btn btn-primary" disabled="disabled" autocomplete="off">Save</button>
