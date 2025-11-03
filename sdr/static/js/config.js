@@ -301,6 +301,9 @@ function addGain(gain) {
     $(tr).append(createInput(gain["value"], function (value) {
         gain['value'] = value;
     }, 'float'));
+    $(tr).append(createLabel(gain["min"]));
+    $(tr).append(createLabel(gain["max"]));
+    $(tr).append(createLabel(gain["step"]));
     $("#gains").append(tr);
 }
 
