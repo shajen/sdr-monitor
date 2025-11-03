@@ -148,6 +148,23 @@ function addDevice(scanner, device) {
     $(d).append(i);
     $(d).append(l);
 
+    if (device['connected']) {
+        let a = document.createElement("span");
+        $(a).addClass("mx-2");
+        $(a).addClass("badge");
+        $(a).addClass("bg-success");
+        $(a).html("connected");
+        $(d).append(a);
+    }
+    else {
+        let a = document.createElement("span");
+        $(a).addClass("mx-2");
+        $(a).addClass("badge");
+        $(a).addClass("bg-danger");
+        $(a).html("not connected");
+        $(d).append(a);
+    }
+
     $("#device_selector").append(d);
 }
 
@@ -191,6 +208,13 @@ function addIgnoredFrequency(ranges, range) {
 }
 
 function selectDevice(scanner, device) {
+    if (device['connected']) {
+        $("#device_section").show();
+    }
+    else {
+        $("#device_section").hide();
+    }
+
     let setInputsEnabled = function (enabled) {
         if (enabled)
             $("#device_settings").show();
@@ -198,7 +222,6 @@ function selectDevice(scanner, device) {
             $("#device_settings").hide();
     }
 
-    $("#device_section").show();
     $("#device_enabled").prop("checked", device["enabled"]);
     $("#device_enabled").unbind("click");
     $("#device_enabled").click(function () {
