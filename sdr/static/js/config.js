@@ -242,6 +242,7 @@ function selectDevice(scanner, device) {
     $("#devices").find("tr:gt(0)").remove();
     $("#satellites").find("tr:gt(1)").remove();
     $("#gains").find("tr:gt(0)").remove();
+    $("#crontab").find("tr:gt(1)").remove();
 
     device['ranges'].forEach(function (range) {
         addScannedFrequency(device['ranges'], range);
@@ -251,6 +252,9 @@ function selectDevice(scanner, device) {
     });
     device['gains'].forEach(function (gain) {
         addGain(gain);
+    });
+    device['crontabs'].forEach(function (crontab) {
+        addCrontab(device['crontabs'], crontab);
     });
 
     $("#new_scanned_frequency").unbind("click");
@@ -269,6 +273,13 @@ function selectDevice(scanner, device) {
     $("#preview_satellites").unbind("click");
     $("#preview_satellites").click(function () {
         previewSatellites(scanner, device);
+    });
+
+    $("#new_crontab").unbind("click");
+    $("#new_crontab").click(function () {
+        device['crontabs'].push({ 'name': '', 'expression': '0 0 * * *', duration: 60, frequency: 0, bandwidth: 0, modulation: '' });
+        let crontab = device['crontabs'][device['crontabs'].length - 1];
+        addCrontab(device['crontabs'], crontab);
     });
 
     updateInput(device, '#start_recording_level', ['start_recording_level']);
@@ -328,6 +339,35 @@ function addGain(gain) {
     $(tr).append(createLabel(gain["max"]));
     $(tr).append(createLabel(gain["step"]));
     $("#gains").append(tr);
+}
+
+function addCrontab(objects, object) {
+    let tr = document.createElement("tr");
+    $(tr).append(createInput(object['name'], function (value) {
+        object['name'] = value;
+    }, "string"));
+    $(tr).append(createInput(object['expression'], function (value) {
+        object['expression'] = value;
+    }, "string"));
+    $(tr).append(createInput(object['duration'], function (value) {
+        object['duration'] = value;
+    }, "integer"));
+    $(tr).append(createInput(object['frequency'], function (value) {
+        object['frequency'] = value;
+    }));
+    $(tr).append(createInput(object['bandwidth'], function (value) {
+        object['bandwidth'] = value;
+    }));
+    $(tr).append(createInputSelect(object['modulation'], function (value) {
+        object['modulation'] = value;
+    }, "", ["AM", "FM", "Other"], "string"));
+    $(tr).append(createButton("Delete", function () {
+        let index = Array.prototype.indexOf.call($(tr).parent().children(), tr) - 1;
+        index -= 1; // because help
+        objects.splice(index, 1);
+        tr.remove();
+    }));
+    $("#crontab").append(tr);
 }
 
 function createLabel(value) {

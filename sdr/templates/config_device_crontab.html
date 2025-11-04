@@ -1,0 +1,21 @@
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" id="crontab">
+        <tr>
+            <td colspan="7">
+                <p><small class="form-text text-muted">Enter scheduled transmissions you want to record. Expression is in cron format.
+                        More about cron <a href="https://en.wikipedia.org/wiki/Cron">here</a>.
+                        On-line generator <a href="https://crontab.guru/">here</a>.</small></p>
+                <p><small class="form-text text-muted">For example, <code>*/30 0 * * *</code> means to start recording at 00:00 and 00:30 every day.</small></p>
+            </td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <th>Expression</th>
+            <th>Duration [s]</th>
+            <th>Frequency [Hz]</th>
+            <th>Bandwidth [Hz]</th>
+            <th>Modulation</th>
+            <th><button id="new_crontab" type="button" class="btn btn-success" autocomplete="off">New</button></th>
+        </tr>
+    </table>
+</div>

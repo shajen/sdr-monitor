@@ -1,6 +1,7 @@
 ai-edge-litert
 astropy
 crispy-bootstrap5
+crontab
 django
 django_bootstrap_icons
 django_cleanup

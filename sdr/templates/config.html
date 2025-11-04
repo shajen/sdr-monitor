@@ -116,6 +116,9 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab4" type="button" role="tab">Satellites</button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab5" type="button" role="tab">Crontab</button>
+                        </li>
                     </ul>
 
                     <div class="tab-content">
@@ -130,6 +133,9 @@
                         </div>
                         <div class="tab-pane" id="device-tab4" role="tabpanel">
                             {% include "config_device_satellites.html" %}
+                        </div>
+                        <div class="tab-pane" id="device-tab5" role="tabpanel">
+                            {% include "config_device_crontab.html" %}
                         </div>
                     </div>
                 </div>
