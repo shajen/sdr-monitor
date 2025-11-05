@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,34 +17,9 @@ LOGIN_URL = "/account/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "simple": {
-            "format": "[{asctime}.{msecs:0<3.0f}] [{name}] [{levelname}] {message:s}",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-            "style": "{",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "simple",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": os.getenv("DJANGO_LOG_LEVEL", "WARNING"),
-    },
-    "loggers": {
-        "django.db": {"level": "INFO"},
-        "django.db.backends": {
-            "level": "INFO",
-            "handlers": ["console"],
-        },
-    },
-}
+with open(os.path.join(BASE_DIR, "logging.json"), "r") as f:
+    LOGGING = json.load(f)
+    LOGGING["root"]["level"] = os.getenv("DJANGO_LOG_LEVEL", "WARNING").upper()
 
 INSTALLED_APPS = [
     "django.contrib.admin",

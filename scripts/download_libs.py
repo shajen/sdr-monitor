@@ -14,7 +14,6 @@ def run(*args):
     args = parser.parse_args(shlex.split(args[0] if len(args) else ""))
 
     logger = logging.getLogger("Libs")
-    logger.setLevel(logging.INFO)
     os.makedirs(args.output, exist_ok=True)
     with open(args.config, "r") as f:
         for lib in json.load(f):

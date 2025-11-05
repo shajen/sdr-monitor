@@ -1,0 +1,34 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {
+            "format": "[{asctime}.{msecs:0<3.0f}] [{name}] [{levelname}] {message:s}",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+            "style": "{"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple"
+        }
+    },
+    "root": {
+        "handlers": [
+            "console"
+        ],
+        "level": "WARNING"
+    },
+    "loggers": {
+        "django.db": {
+            "level": "WARNING"
+        },
+        "django.db.backends": {
+            "level": "WARNING",
+            "handlers": [
+                "console"
+            ]
+        }
+    }
+}

@@ -16,13 +16,6 @@ def run(*args):
     parser.add_argument("-cls", "--classifier", help="enable classifier", action="store_true")
     args = parser.parse_args(shlex.split(args[0] if len(args) else ""))
 
-    logging.getLogger("Worker").setLevel(logging.INFO)
-    logging.getLogger("Reader").setLevel(logging.INFO)
-    logging.getLogger("Spectrogram").setLevel(logging.INFO)
-    logging.getLogger("Transmission").setLevel(logging.INFO)
-    logging.getLogger("Cleaner").setLevel(logging.INFO)
-    logging.getLogger("Classifier").setLevel(logging.INFO)
-
     threads = []
     if args.reader:
         threads.append(Reader(settings.MQTT))
