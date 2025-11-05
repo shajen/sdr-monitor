@@ -3,8 +3,7 @@
 {% load sdr_filters %}
 
 {% block simple_title %}
-Transmission {{ transmission.begin_date }} - {{ transmission.end_date }},
-{{ transmission.frequency | frequency:2 }} - {{transmission.bandwidth | frequency:2 }}
+Transmission - {{ transmission.frequency | frequency:2 }} - {{transmission.bandwidth | frequency:2 }}
 {% endblock %}
 
 {% block simple_content %}

@@ -4,8 +4,7 @@
 {% load static %}
 
 {% block simple_title %}
-Spectrogram {{ spectrogram.begin_real_date }} - {{ spectrogram.end_real_date }},
-{{ spectrogram.begin_frequency | frequency }} - {{spectrogram.end_frequency| frequency }}
+Spectrogram - {{ spectrogram.frequency | frequency }} - {{ spectrogram.sample_rate | frequency}}
 {% endblock %}
 
 {% block main_scripts %}
