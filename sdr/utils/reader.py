@@ -1,3 +1,4 @@
+from sdr.utils.gain_tester_controller import GainTesterController
 from sdr.utils.scheduler import Scheduler
 from sdr.utils.spectogram_reader import SpectrogramReader
 from sdr.utils.transmission_reader import TransmissionReader
@@ -16,6 +17,7 @@ class Reader(threading.Thread):
         self.__parsers.append(SpectrogramReader())
         self.__parsers.append(TransmissionReader())
         self.__parsers.append(Scheduler())
+        self.__parsers.append(GainTesterController())
 
         self.__client = common.utils.mqtt.get_client(config["url"], config["user"], config["password"], "sdr-monitor", self)
         self.__client.on_connect = Reader.on_connect
@@ -25,6 +27,11 @@ class Reader(threading.Thread):
         self.__client.loop_forever()
 
     def stop(self):
+        for parser in self.__parsers:
+            try:
+                parser.stop()
+            except:
+                pass
         self.__client.disconnect()
 
     def on_connect(client, userdata, flags, rc):
@@ -34,6 +41,9 @@ class Reader(threading.Thread):
         self.__client.subscribe("sdr/+/transmission")
         self.__client.subscribe("sdr/+/transmission/+")
         self.__client.subscribe("sdr/scheduler/+/+/get")
+        self.__client.subscribe("sdr/gain_test/+/+/start")
+        self.__client.subscribe("sdr/gain_test/+/+/stop")
+        self.__client.subscribe("sdr/gain_test/+/+/get_status")
 
     def on_message(client, userdata, message):
         self = userdata

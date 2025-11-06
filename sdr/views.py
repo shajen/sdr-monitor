@@ -4,8 +4,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
-from django.db.models import F, Count
+from django.db.models import F, Count, Min, Max
 from django.db.models.functions import TruncSecond, TruncDate, Length
+from django.http import Http404
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.timezone import localtime
@@ -276,3 +277,19 @@ def satellites(request):
         return JsonResponse(flights, safe=False)
     else:
         return render(request, "flights.html", {"flights": flights})
+
+
+@login_required()
+def gain_tester(request):
+    return render(request, "gain_tester.html", {"mqtt": monitor.settings.MQTT})
+
+
+@login_required()
+def gain_test(request, name):
+    devices = Device.objects.filter(name__startswith=name)
+    spectrograms = Spectrogram.objects.filter(device__in=devices).select_related("device").order_by("device__name", "begin_real_date")
+    real_date = Spectrogram.objects.filter(device__in=devices).aggregate(begin_real_date=Min("begin_real_date"), end_real_date=Max("end_real_date"))
+    if len(spectrograms) == 0:
+        raise Http404()
+    spectrogram = spectrograms[0]
+    return render(request, "gain_test.html", {"name": name, "spectrogram": spectrogram, "spectrograms": spectrograms} | real_date)

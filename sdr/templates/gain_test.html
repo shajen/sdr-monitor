@@ -1,0 +1,34 @@
+{% extends "generic/simple_big.html" %}
+{% load i18n %}
+{% load sdr_filters %}
+{% load static %}
+
+{% block simple_title %}
+Gain test - {{ name }}
+{% endblock %}
+
+{% block simple_content %}
+<div class="row">
+    <h3 class="text-center"> {{ begin_real_date }} - {{ end_real_date }} </h3>
+    <div id="scrollable-main-image" class="horizontal dragscroll" style="overflow-x: auto;">
+        <table class="table table-striped table-bordered table-hover">
+            <tr>
+                <td class="py-0"></td>
+                <td class="py-0">
+                    <image src="{% url 'sdr_spectrogram_data' spectrogram.id %}?format=image&data=top"> </image>
+                </td>
+            </tr>
+            {% for spectrogram in spectrograms %}
+            <tr>
+                <td class="py-0">
+                    <a href="{% url 'sdr_spectrogram' spectrogram.id %}?mode=static">{{ spectrogram.device }}</a>
+                </td>
+                <td class=" py-0">
+                    <image src="{% url 'sdr_spectrogram_data' spectrogram.id %}?format=image&data=main"> </image>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
