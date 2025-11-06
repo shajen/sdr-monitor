@@ -208,6 +208,7 @@ function addIgnoredFrequency(ranges, range) {
 }
 
 function selectDevice(scanner, device) {
+    device['alias'] = '';
     if (device['connected']) {
         $("#device_section").show();
     }

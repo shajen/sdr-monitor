@@ -14,8 +14,7 @@ import struct
 class SpectrogramReader:
     def __init__(self):
         self.__logger = logging.getLogger("Spectrogram")
-        self.__aggregate_seconds = 24 * 60 * 60
-        self.__regex = re.compile("sdr/(\\w+)/spectrogram")
+        self.__regex = re.compile("sdr/([\\w\\.]+)/spectrogram")
 
     def get_device(self, name):
         try:

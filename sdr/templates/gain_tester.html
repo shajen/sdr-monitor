@@ -6,6 +6,8 @@
 {% block simple_title %}Gain tester{% endblock %}
 
 {% block main_scripts %}
+<script src="{% static 'js/mqtt.js' %}"></script>
+<script src="{% static 'js/view.js' %}"></script>
 <script src="{% static 'js/gain_tester.js' %}"></script>
 {% endblock %}
 
@@ -55,14 +57,18 @@
                 <td></td>
             </tr>
             <tr>
-                <td>Test name</td>
-                <td><input class="form-control" autocomplete="off" id="name"></td>
-                <td></td>
+                <td>Sample rate</td>
+                <td>
+                    <select class="form-select form-control" autocomplete="off" id="sample_rate">
+                        <option value="default" selected disabled hidden>Select</option>
+                    </select>
+                </td>
+                <td>[Hz]</td>
             </tr>
             <tr>
-                <td>Sample rate</td>
-                <td><input class="form-control" autocomplete="off" id="sample_rate" value="2000000"></td>
-                <td>[Hz]</td>
+                <td>Test name</td>
+                <td><input class="form-control" autocomplete="off" id="name" value="name"></td>
+                <td></td>
             </tr>
             <tr>
                 <td>Start</td>

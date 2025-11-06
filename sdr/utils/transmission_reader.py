@@ -14,8 +14,7 @@ import struct
 class TransmissionReader:
     def __init__(self):
         self.__logger = logging.getLogger("Transmission")
-        self.__regex_old = re.compile("sdr/\\w+/transmission")
-        self.__regex = re.compile("sdr/(\\w+)/transmission/(\\w+)")
+        self.__regex = re.compile("sdr/([\\w\\.]+)/transmission/(\\w+)")
 
     def get_device(self, name):
         try:
@@ -80,9 +79,6 @@ class TransmissionReader:
 
     def on_message(self, client, message):
         topic = message.topic
-        if self.__regex_old.match(topic):
-            self.__logger.debug(topic)
-            topic += "/uint8"
         m = self.__regex.match(topic)
         if m:
             self.__logger.debug(topic)

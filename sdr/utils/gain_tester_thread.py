@@ -43,10 +43,7 @@ class GainTesterThread(threading.Thread):
         config["satellites"] = []
         alias = self.__alias
         for key in sorted(gains.keys()):
-            if isinstance(gains[key], float):
-                alias += f"_{key}{gains[key]*10:03.0f}"
-            else:
-                alias += f"_{key}{gains[key]:02d}"
+            alias += f"_{key}_{gains[key]:02.1f}"
         self.__logger.debug(f"alias: {alias}")
         _device = self.__get_device(config)
         _device["alias"] = alias
