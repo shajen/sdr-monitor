@@ -21,7 +21,9 @@ Gain test - {{ name }}
             {% for spectrogram in spectrograms %}
             <tr>
                 <td class="py-0">
-                    <a href="{% url 'sdr_spectrogram' spectrogram.id %}?mode=static">{{ spectrogram.device }}</a>
+                    <nobr>
+                        <a href="{% url 'sdr_spectrogram' spectrogram.id %}?mode=static">{{ spectrogram.device.name }}</a>
+                    </nobr>
                 </td>
                 <td class=" py-0">
                     <image src="{% url 'sdr_spectrogram_data' spectrogram.id %}?format=image&data=main"> </image>

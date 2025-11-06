@@ -63,8 +63,19 @@ class TransmissionAdmin(admin.ModelAdmin):
     )
 
 
+class GainTestAdmin(admin.ModelAdmin):
+    list_per_page = 100
+    list_display = (
+        "id",
+        "name",
+        "device_prefix",
+        "datetime",
+    )
+
+
 admin.site.register(Device, DeviceAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Spectrogram, SpectrogramAdmin)
 admin.site.register(AudioClass, AudioClassAdmin)
 admin.site.register(Transmission, TransmissionAdmin)
+admin.site.register(GainTest, GainTestAdmin)

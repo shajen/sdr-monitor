@@ -43,6 +43,12 @@
             <nav id="navmenu" class="navmenu">
                 <ul>
                     <li><a href="{% url 'sdr_config' %}"> Configuration </a></li>
+                    <li class="dropdown"><a href="#"><span>Gain</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="{% url 'sdr_gain_tester' %}">Tester</a></li>
+                            <li><a href="{% url 'sdr_gain_tests' %}">Test results</a></li>
+                        </ul>
+                    </li>
                     <li><a href="{% url 'sdr_groups' %}"> Groups </a></li>
                     <li><a href="{% url 'sdr_spectrograms' %}"> Spectrograms </a></li>
                     <li><a href="{% url 'sdr_transmissions' %}"> Transmissions </a></li>

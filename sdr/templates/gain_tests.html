@@ -1,0 +1,42 @@
+{% extends "generic/simple_small.html" %}
+{% load i18n %}
+{% load sdr_filters %}
+
+{% block simple_title %}Gain tests: {{items.paginator.count}}{% endblock %}
+
+{% block simple_content %}
+<div class="row mt-2">
+    <div class="col-12">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <tr>
+                    <form action="{% url 'sdr_gain_tests' %}" method="get">
+                        {% include "generic/headers/filter_string.html" with field="name" %}
+                        {% include "generic/headers/filter_number.html" with field="datetime" %}
+                        <th>
+                            <input type="hidden" id="input_order_by" value="{{ order_by }}" name="order_by">
+                            <input type="submit" class="btn btn-success" value="Filter">
+                            <a href="?reset" class="btn btn-danger">Reset</a>
+                        </th>
+                    </form>
+                </tr>
+                <tr>
+                    {% include "generic/headers/sort.html" with name="Name" field="name" col="4" %}
+                    {% include "generic/headers/sort.html" with name="Date" field="datetime" col="4" %}
+                    <th class="col-md-4"></th>
+                </tr>
+                {% for gain_test in items %}
+                <tr>
+                    <td class="py-1">{{ gain_test.name }}</td>
+                    <td class="py-1">{{ gain_test.datetime }}</td>
+                    <td>
+                        <a href="{% url 'sdr_gain_test' gain_test.id %}" class="btn btn-primary">open</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% include "generic/paginator.html" with page_obj=items page_param="page" %}
+{% endblock %}

@@ -1,20 +1,23 @@
+from sdr.models import GainTest
 import common.utils.mqtt
 import copy
 import datetime
 import itertools
 import json
 import logging
+import secrets
 import threading
 import time
 
 
 class GainTesterThread(threading.Thread):
-    def __init__(self, mqtt_url, mqtt_user, mqtt_password, alias, scanner, device, sample_rate, frequency_range, duration, gain_list):
+    def __init__(self, mqtt_url, mqtt_user, mqtt_password, name, scanner, device, sample_rate, frequency_range, duration, gain_list):
         super().__init__()
         self.__logger = logging.getLogger("GainThread")
         self.__stop_event = threading.Event()
         self.__client = common.utils.mqtt.MqttSyncClient(mqtt_url, mqtt_user, mqtt_password, "gain-tester")
-        self.__alias = alias or device
+        self.__alias = secrets.token_hex(4)
+        self.__name = name or device
         self.__scanner = scanner
         self.__device = device
         self.__sample_rate = sample_rate
@@ -91,8 +94,9 @@ class GainTesterThread(threading.Thread):
         config = self.__client.send_and_get("sdr/list", f"sdr/status/{self.__scanner}")
         config = json.loads(config)
         self.__logger.info(
-            f"scanner: {self.__scanner}, device: {self.__device}, alias: {self.__alias}, sample rate: {self.__sample_rate}, range: {self.__frequency_range}, single test duration: {self.__duration} seconds"
+            f"scanner: {self.__scanner}, device: {self.__device}, name: {self.__name}, alias: {self.__alias}, sample rate: {self.__sample_rate}, range: {self.__frequency_range}, single test duration: {self.__duration} seconds"
         )
+        GainTest.objects.create(name=self.__name, device_prefix=self.__alias)
         self.__test_gain_list(copy.deepcopy(config))
         self.__client.send_and_get(f"sdr/config/{self.__scanner}", f"sdr/config/{self.__scanner}/success", json.dumps(config))
         self.__logger.info(f"restoring original config")

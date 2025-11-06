@@ -80,3 +80,9 @@ class Transmission(models.Model):
 
     def bandwidth(self):
         return self.end_frequency - self.begin_frequency
+
+
+class GainTest(models.Model):
+    name = models.CharField("Name", max_length=255)
+    device_prefix = models.CharField("Device prefix", max_length=255)
+    datetime = models.DateTimeField(auto_now_add=True)
