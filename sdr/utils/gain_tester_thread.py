@@ -1,6 +1,5 @@
 from sdr.models import GainTest
 import common.utils.mqtt
-import copy
 import datetime
 import itertools
 import json
@@ -66,7 +65,7 @@ class GainTesterThread(threading.Thread):
         self.__logger.info(f"run test: {gains}")
         self.__update_config(config, gains)
         self.__logger.debug(f"test gains: {self.__get_device_gains(config)}")
-        self.__client.send_and_get(f"sdr/config/{self.__scanner}", f"sdr/config/{self.__scanner}/success", json.dumps(config))
+        self.__client.send_and_get(f"sdr/tmp_config/{self.__scanner}", f"sdr/tmp_config/{self.__scanner}/success", json.dumps(config))
         self.__wait()
 
     def __test_gain_list(self, config):
@@ -97,9 +96,9 @@ class GainTesterThread(threading.Thread):
             f"scanner: {self.__scanner}, device: {self.__device}, name: {self.__name}, alias: {self.__alias}, sample rate: {self.__sample_rate}, range: {self.__frequency_range}, single test duration: {self.__duration} seconds"
         )
         GainTest.objects.create(name=self.__name, device_prefix=self.__alias)
-        self.__test_gain_list(copy.deepcopy(config))
-        self.__client.send_and_get(f"sdr/config/{self.__scanner}", f"sdr/config/{self.__scanner}/success", json.dumps(config))
+        self.__test_gain_list(config)
         self.__logger.info(f"restoring original config")
+        self.__client.send_and_get(f"sdr/reset_tmp_config/{self.__scanner}", f"sdr/reset_tmp_config/{self.__scanner}/success")
         time.sleep(1)
         self.__client.stop()
         self.__logger.info("stopped")
