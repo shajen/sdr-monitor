@@ -6,6 +6,33 @@ $(document).ready(function () {
     connect(onConnect, onMessage);
 });
 
+function setMessage(message) {
+    $("#status_content").html(message);
+    $('#status_modal').modal('show');
+}
+
+function isFieldValid(id, message) {
+    if (!$(id).val()) {
+        setMessage(message)
+        return false;
+    }
+    return true;
+}
+
+function areStatusFieldsValid() {
+    return isFieldValid('#scanner', "Complete the scanner field.")
+        && isFieldValid('#device', "Complete the device field.");
+}
+
+function areAllFieldsValid() {
+    return areStatusFieldsValid()
+        && isFieldValid('#sample_rate', "Complete the sample rate field.")
+        && isFieldValid('#name', "Complete the test name field.")
+        && isFieldValid('#range_start', "Complete the start field.")
+        && isFieldValid('#range_stop', "Complete the stop field.")
+        && isFieldValid('#duration', "Complete the duration field.");
+}
+
 function setWaiting(enabled) {
     $("#waiting_section").toggle(enabled);
     $("#start").prop("disabled", enabled);
@@ -73,6 +100,9 @@ function selectDevice(scanner, device) {
 }
 
 function sendStart(client) {
+    if (!areAllFieldsValid()) {
+        return;
+    }
     const scanner = $('#scanner').val();
     const device = $('#device').val();
     let gains = {}
@@ -96,6 +126,9 @@ function sendStart(client) {
 }
 
 function sendStop(client) {
+    if (!areStatusFieldsValid()) {
+        return;
+    }
     const scanner = $('#scanner').val();
     const device = $('#device').val();
     setWaiting(true);
@@ -103,6 +136,9 @@ function sendStop(client) {
 }
 
 function sendStatus(client) {
+    if (!areStatusFieldsValid()) {
+        return;
+    }
     const scanner = $('#scanner').val();
     const device = $('#device').val();
     setWaiting(true);
