@@ -105,36 +105,31 @@
                 <div id="device_settings">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#device-tab1" type="button" role="tab">Detector</button>
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#device-tab-detector" type="button" role="tab">Detector</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab2" type="button" role="tab">Precision</button>
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab-satellites" type="button" role="tab">Satellites</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab3" type="button" role="tab">Gains</button>
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab-crontab" type="button" role="tab">Crontab</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab4" type="button" role="tab">Satellites</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab5" type="button" role="tab">Crontab</button>
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#device-tab-gains" type="button" role="tab">Gains</button>
                         </li>
                     </ul>
 
                     <div class="tab-content">
-                        <div class="tab-pane show active" id="device-tab1" role="tabpanel">
+                        <div class="tab-pane show active" id="device-tab-detector" role="tabpanel">
                             {% include "config_device_main.html" %}
-                        </div>
-                        <div class="tab-pane" id="device-tab2" role="tabpanel">
                             {% include "config_device_precision.html" %}
                         </div>
-                        <div class="tab-pane" id="device-tab3" role="tabpanel">
+                        <div class="tab-pane" id="device-tab-gains" role="tabpanel">
                             {% include "config_device_gains.html" %}
                         </div>
-                        <div class="tab-pane" id="device-tab4" role="tabpanel">
+                        <div class="tab-pane" id="device-tab-satellites" role="tabpanel">
                             {% include "config_device_satellites.html" %}
                         </div>
-                        <div class="tab-pane" id="device-tab5" role="tabpanel">
+                        <div class="tab-pane" id="device-tab-crontab" role="tabpanel">
                             {% include "config_device_crontab.html" %}
                         </div>
                     </div>
