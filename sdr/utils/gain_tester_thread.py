@@ -22,6 +22,8 @@ class GainTesterThread(threading.Thread):
         self.__sample_rate = sample_rate
         self.__frequency_range = frequency_range
         self.__duration = datetime.timedelta(seconds=duration)
+        self.__total_duration = datetime.timedelta(seconds=0)
+        self.__end_datetime = datetime.datetime.fromtimestamp(0)
         self.__gain_list = gain_list
 
     def scanner(self):
@@ -29,6 +31,9 @@ class GainTesterThread(threading.Thread):
 
     def device(self):
         return self.__device
+
+    def get_datetime_message(self):
+        return f"Total test duration: {self.__total_duration}, will end around {self.__end_datetime}."
 
     def __get_device(self, config):
         for _device in config["devices"]:
@@ -79,9 +84,9 @@ class GainTesterThread(threading.Thread):
         names = [name for name, _ in gains]
         value_lists = [vals for _, vals in gains]
         gains_combinations = [dict(zip(names, combo)) for combo in itertools.product(*value_lists)]
-        total_duration = self.__duration * len(gains_combinations)
-        end_time = datetime.datetime.now().replace(microsecond=0) + total_duration
-        self.__logger.info(f"total duration: {total_duration}, finish at: {end_time}")
+        self.__total_duration = self.__duration * len(gains_combinations)
+        self.__end_datetime = datetime.datetime.now().replace(microsecond=0) + self.__total_duration
+        self.__logger.info(f"total duration: {self.__total_duration}, finish at: {self.__end_datetime}")
         for gains in gains_combinations:
             if self.__stop_event.is_set():
                 break

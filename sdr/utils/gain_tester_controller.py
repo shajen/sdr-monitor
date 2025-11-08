@@ -31,9 +31,21 @@ class GainTesterController:
                 time.sleep(5)
                 self.__threads.remove(thread)
 
+    def __prune(self):
+        for thread in self.__threads[:]:
+            if not thread.is_alive():
+                self.__threads.remove(thread)
+
     def __send_status(self, client, scanner, device, message):
         data = {"message": message}
         client.publish("sdr/gain_test/%s/%s/status" % (scanner, device), json.dumps(data))
+
+    def __get_message(self, scanner, device):
+        alert = "Do not change device configuration during test!<br>Only one test can be performed at a time!"
+        for thread in self.__threads:
+            if thread.scanner() == scanner and thread.device() == device:
+                return f"{thread.get_datetime_message()}<br>{alert}"
+        return alert
 
     def on_message(self, client, message):
         topic = message.topic
@@ -43,13 +55,15 @@ class GainTesterController:
             device = m.group(2)
             action = m.group(3)
             self.__logger.info(f"scanner: {scanner}, device: {device}, action: {action}")
-            alert = "Do not change device configuration during test! Only one test can be performed at a time!"
+            self.__prune()
+
             if action == "start":
                 data = json.loads(message.payload.decode("utf-8"))
                 self.__logger.info(f"data: {data}")
                 self.__start(data["name"], scanner, device, data["sample_rate"], data["frequency_range"], data["duration"], data["gains"])
+                time.sleep(1)
                 client.publish("sdr/gain_test/%s/%s/ok" % (scanner, device))
-                self.__send_status(client, scanner, device, f"Gain test started. {alert}")
+                self.__send_status(client, scanner, device, f"Gain test started.<br>{self.__get_message(scanner, device)}")
             elif action == "stop":
                 self.__stop(scanner, device)
                 client.publish("sdr/gain_test/%s/%s/ok" % (scanner, device))
@@ -57,7 +71,7 @@ class GainTesterController:
             elif action == "get_status":
                 threads = [t for t in self.__threads if (t.scanner() == scanner and t.device() == device)]
                 if 0 < len(threads):
-                    self.__send_status(client, scanner, device, f"Gain test is running. {alert}")
+                    self.__send_status(client, scanner, device, f"Gain test is running.<br>{self.__get_message(scanner, device)}")
                 else:
                     self.__send_status(client, scanner, device, "Gain test is not running.")
             self.__logger.info(f"number of active tests: {len(self.__threads)}")
