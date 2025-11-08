@@ -9,8 +9,9 @@ from django.db.models import F, Count, Min, Max
 from django.db.models.functions import TruncSecond, TruncDate, Length
 from django.http import Http404
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.timezone import localtime
+from sdr.app_settings import *
 from sdr.models import *
 from sdr.signals import *
 import common.helpers
@@ -227,7 +228,6 @@ def logs(request):
 
 
 class SatellitesForm(forms.Form):
-    api_key = forms.CharField(max_length=100)
     latitude = forms.FloatField()
     longitude = forms.FloatField()
     altitude = forms.FloatField()
@@ -252,7 +252,6 @@ def satellites(request):
     form = SatellitesForm(request.GET)
     if form.is_valid():
         reader = sdr.utils.satellites.SatellitesFlightReader(
-            form.cleaned_data["api_key"],
             form.cleaned_data["latitude"],
             form.cleaned_data["longitude"],
             form.cleaned_data["altitude"],
@@ -305,3 +304,17 @@ def gain_test(request, gain_test_id):
         raise Http404()
     spectrogram = spectrograms[0]
     return render(request, "gain_test.html", {"name": gain_test.name, "spectrogram": spectrogram, "spectrograms": spectrograms} | real_date)
+
+
+@staff_member_required()
+def settings(request):
+    if request.method == "POST":
+        form = AppSettingsForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Settings updated successfully!")
+            return redirect("sdr_settings")
+    else:
+        form = AppSettingsForm()
+        form.load_initial()
+    return render(request, "app_settings.html", {"form": form})

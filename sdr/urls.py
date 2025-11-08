@@ -17,4 +17,5 @@ urlpatterns = [
     path("gain_tester/", sdr.views.gain_tester, name="sdr_gain_tester"),
     path("gain_tests/", sdr.views.gain_tests, name="sdr_gain_tests"),
     path("gain_test/<int:gain_test_id>/", sdr.views.gain_test, name="sdr_gain_test"),
+    path("settings/", sdr.views.settings, name="sdr_settings"),
 ]

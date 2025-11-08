@@ -107,7 +107,6 @@ function selectScanner(scanner) {
     updateInput(scanner, '#latitude', ['position', 'latitude'], 'string');
     updateInput(scanner, '#longitude', ['position', 'longitude'], 'string');
     updateInput(scanner, '#altitude', ['position', 'altitude']);
-    updateInput(scanner, '#api_key', ['api_key'], 'string');
 
     $("#device_selector").empty();
     $("#ignored_frequencies").find("tr:gt(0)").remove();
@@ -432,7 +431,6 @@ function previewSatellites(scanner, device) {
     $.ajax({
         dataType: "html",
         data: {
-            "api_key": scanner['api_key'],
             "latitude": scanner['position']['latitude'],
             "longitude": scanner['position']['longitude'],
             "altitude": scanner['position']['altitude'],

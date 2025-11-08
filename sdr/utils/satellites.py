@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.utils import timezone
 from monitor.settings import SATELLITES_CACHE_DIR
+from sdr.app_settings import *
 import json
 import logging
 import os
@@ -8,8 +9,8 @@ import requests
 
 
 class SatellitesFlightReader:
-    def __init__(self, api_key, latitude, longitude, altitude, use_cache):
-        self.__api_key = api_key
+    def __init__(self, latitude, longitude, altitude, use_cache):
+        self.__api_key = AppSettings.get(AppSettingsKey.N2YO_API_KEY)
         self.__latitude = latitude
         self.__longitude = longitude
         self.__altitude = altitude

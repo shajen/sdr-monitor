@@ -42,7 +42,12 @@
             </a>
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="{% url 'sdr_config' %}"> Configuration </a></li>
+                    <li class="dropdown"><a href="#"><span>Configuration</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="{% url 'sdr_settings' %}">Monitor settings</a></li>
+                            <li><a href="{% url 'sdr_config' %}">Sdr settings</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown"><a href="#"><span>Gain</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li><a href="{% url 'sdr_gain_tester' %}">Tester</a></li>

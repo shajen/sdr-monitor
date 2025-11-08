@@ -73,9 +73,19 @@ class GainTestAdmin(admin.ModelAdmin):
     )
 
 
+class AppSettingAdmin(admin.ModelAdmin):
+    list_per_page = 100
+    list_display = (
+        "id",
+        "key",
+        "value",
+    )
+
+
 admin.site.register(Device, DeviceAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Spectrogram, SpectrogramAdmin)
 admin.site.register(AudioClass, AudioClassAdmin)
 admin.site.register(Transmission, TransmissionAdmin)
 admin.site.register(GainTest, GainTestAdmin)
+admin.site.register(AppSetting, AppSettingAdmin)

@@ -11,8 +11,6 @@ def run(*args):
     parser = argparse.ArgumentParser(description="Set worker config")
     parser.add_argument("-r", "--reader", help="enable reader", action="store_true")
     parser.add_argument("-clr", "--cleaner", help="enable cleaner", action="store_true")
-    parser.add_argument("-ss", "--spectrograms_total_size_gb", help="set spectrograms quota in gb", type=int, default=0, metavar="size")
-    parser.add_argument("-ts", "--transmissions_total_size_gb", help="set transmissions quota in gb", type=int, default=0, metavar="size")
     parser.add_argument("-cls", "--classifier", help="enable classifier", action="store_true")
     args = parser.parse_args(shlex.split(args[0] if len(args) else ""))
 
@@ -20,7 +18,7 @@ def run(*args):
     if args.reader:
         threads.append(Reader(settings.MQTT))
     if args.cleaner:
-        threads.append(Cleaner(args.spectrograms_total_size_gb, args.transmissions_total_size_gb))
+        threads.append(Cleaner())
     if args.classifier:
         try:
             from sdr.utils.classifier import Classifier

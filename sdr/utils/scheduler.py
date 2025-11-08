@@ -44,7 +44,7 @@ class Scheduler:
 
     def __get_satellite_scheduled_transmissions(self, query):
         self.__logger.info("satellites: %s" % (len(query["satellites"])))
-        reader = sdr.utils.satellites.SatellitesFlightReader(query["api_key"], query["latitude"], query["longitude"], query["altitude"], True)
+        reader = sdr.utils.satellites.SatellitesFlightReader(query["latitude"], query["longitude"], query["altitude"], True)
         return reader.get_visible_satellites_flights(query["satellites"], True)
 
     def on_message(self, client, message):

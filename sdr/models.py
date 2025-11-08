@@ -86,3 +86,11 @@ class GainTest(models.Model):
     name = models.CharField("Name", max_length=255)
     device_prefix = models.CharField("Device prefix", max_length=255)
     datetime = models.DateTimeField(auto_now_add=True)
+
+
+class AppSetting(models.Model):
+    key = models.CharField(max_length=255, unique=True)
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.key}={self.value}"

@@ -1,3 +1,4 @@
+from sdr.app_settings import *
 from sdr.models import *
 import logging
 import threading
@@ -5,14 +6,14 @@ import time
 
 
 class Cleaner(threading.Thread):
-    def __init__(self, spectrograms_total_size_gb, transmissions_total_size_gb):
+    def __init__(self):
         threading.Thread.__init__(self)
         self.__is_runnig = True
         self.__last_clear_timestamp = 0.0
         self.__clear_interval = 60 * 60
         self.__logger = logging.getLogger("Cleaner")
-        self.__spectrograms_total_size_gb = spectrograms_total_size_gb
-        self.__transmissions_total_size_gb = transmissions_total_size_gb
+        self.__spectrograms_total_size_gb = AppSettings.get(AppSettingsKey.SPECTROGRAMS_TOTAL_SIZE_GB)
+        self.__transmissions_total_size_gb = AppSettings.get(AppSettingsKey.TRANSMISSIONS_TOTAL_SIZE_GB)
 
     def run(self):
         while self.__is_runnig:

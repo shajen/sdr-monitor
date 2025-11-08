@@ -1,10 +1,11 @@
+from common.utils.type import *
 from pathlib import Path
 import json
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "0123456789012345678901234567890123456789")
-DEBUG = os.getenv("DJANGO_DEBUG", "0").lower() in ["true", "1", "t", "y", "yes"]
+DEBUG = str_to_bool(os.getenv("DJANGO_DEBUG", "0"))
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_VIRTUAL_HOST", "http://127.0.0.1").split(",")
 STATIC_ROOT = os.path.join(BASE_DIR, "data", "public", "static")
