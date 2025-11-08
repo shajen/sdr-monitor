@@ -2,6 +2,7 @@ from common.helpers import *
 from django import forms
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
 from django.db.models import F, Count, Min, Max
@@ -159,7 +160,7 @@ def transmission_data(request, transmission_id):
         return file_response(filename)
 
 
-@login_required()
+@staff_member_required()
 @permission_required("sdr.change_group", raise_exception=True)
 def groups(request, message_success="", message_error=""):
     items = Group.objects.annotate(bandwidth=F("end_frequency") - F("begin_frequency"), transmissions_count=Count("transmission"))
@@ -173,7 +174,7 @@ def groups(request, message_success="", message_error=""):
     return render(request, "groups.html", dict({"items": items}, **options_lists))
 
 
-@login_required()
+@staff_member_required()
 @permission_required("sdr.change_group", raise_exception=True)
 def update_groups(request):
     Transmission.objects.update(group_id=get_default_group_id())
@@ -183,7 +184,7 @@ def update_groups(request):
         ).update(group_id=group.id)
 
 
-@login_required()
+@staff_member_required()
 @permission_required("sdr.change_group", raise_exception=True)
 def add_group(request):
     try:
@@ -198,7 +199,7 @@ def add_group(request):
         return groups(request, "", "Error!")
 
 
-@login_required()
+@staff_member_required()
 @permission_required("sdr.change_group", raise_exception=True)
 def delete_group(request, group_id):
     try:
@@ -214,13 +215,13 @@ def delete_group(request, group_id):
         return groups(request, "", "Error!")
 
 
-@login_required()
+@staff_member_required()
 @permission_required("sdr.change_device", raise_exception=True)
 def config(request):
     return render(request, "config.html", {"mqtt": monitor.settings.MQTT})
 
 
-@login_required()
+@staff_member_required()
 def logs(request):
     return common.utils.files.get_directory_as_archive_response(settings.LOG_DIR, "logs")
 
@@ -279,7 +280,7 @@ def satellites(request):
         return render(request, "flights.html", {"flights": flights})
 
 
-@login_required()
+@staff_member_required()
 def gain_tester(request):
     return render(request, "gain_tester.html", {"mqtt": monitor.settings.MQTT})
 
