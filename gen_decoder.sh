@@ -14,4 +14,5 @@ function gen_decoder {
 pushd sdr/decoders
 gen_decoder fm_decoder.grc
 gen_decoder am_decoder.grc
+gen_decoder wfm_decoder.grc
 popd

@@ -3,6 +3,7 @@ import astropy.nddata
 import numpy as np
 import sdr.decoders.am_decoder
 import sdr.decoders.fm_decoder
+import sdr.decoders.wfm_decoder
 
 
 def convert_uint8_to_float32(data):
@@ -30,7 +31,10 @@ def make_spectrogram(data, sample_rate):
 
 def decode_audio(in_file, out_file, modulation, sample_rate):
     if modulation == "FM":
-        decoder = sdr.decoders.fm_decoder.fm_decoder(in_file, out_file, sample_rate)
+        if 75000 <= sample_rate:
+            decoder = sdr.decoders.wfm_decoder.wfm_decoder(in_file, out_file, sample_rate)
+        else:
+            decoder = sdr.decoders.fm_decoder.fm_decoder(in_file, out_file, sample_rate)
     elif modulation == "AM":
         decoder = sdr.decoders.am_decoder.am_decoder(in_file, out_file, sample_rate)
     else:
