@@ -4,17 +4,18 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from humanize import naturalsize
 from sdr.models import *
+import base64
+import json
 import logging
 import re
 import sdr.utils.device
 import sdr.utils.file
-import struct
 
 
 class TransmissionReader:
     def __init__(self):
         self.__logger = logging.getLogger("Transmission")
-        self.__regex = re.compile("sdr/([\\w\\.]+)/transmission/(\\w+)")
+        self.__regex = re.compile("sdr/transmission/\\w+/([\\w\\.]+)")
 
     def get_device(self, name):
         try:
@@ -23,17 +24,6 @@ class TransmissionReader:
             return Device.objects.create(name=sdr.utils.device.convert_raw_to_name_to_pretty_name(name), raw_name=name)
 
     def append_transmission(self, device, dt, begin_frequency, end_frequency, samples, sample_size, sample_type):
-        self.__logger.debug(
-            "%s, append, %s, %d - %d, samples: %d, type: %s"
-            % (
-                device,
-                dt.strftime("%Y-%m-%d %H:%M:%S.%f"),
-                begin_frequency,
-                end_frequency,
-                sample_size,
-                sample_type,
-            )
-        )
         device = self.get_device(device)
         frequency = (begin_frequency + end_frequency) // 2
         try:
@@ -81,9 +71,15 @@ class TransmissionReader:
         topic = message.topic
         m = self.__regex.match(topic)
         if m:
-            self.__logger.debug(topic)
-            (timestamp, begin_frequency, end_frequency, samples_count) = struct.unpack("<QLLL", message.payload[:20])
-            dt = make_aware(timezone.datetime.fromtimestamp(timestamp / 1000))
-            self.append_transmission(m.group(1), dt, begin_frequency, end_frequency, message.payload[20:], samples_count, m.group(2))
+            device = m.group(1)
+            message = json.loads(message.payload.decode("utf-8"))
+            data = base64.b64decode(message["data"])
+            frequency = message["frequency"]
+            bandwidth = message["bandwidth"]
+            begin_frequency = frequency - bandwidth // 2
+            end_frequency = frequency + bandwidth // 2
+            dt = make_aware(timezone.datetime.fromtimestamp(message["time"] / 1000))
+            self.__logger.info(f"device: {device}, frequency: {frequency}, bandwidth: {bandwidth}, datetime: {dt}, data size: {naturalsize(len(data))}")
+            self.append_transmission(device, dt, begin_frequency, end_frequency, data, bandwidth, "uint8")
             return True
         return False

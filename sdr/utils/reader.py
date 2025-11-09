@@ -38,8 +38,7 @@ class Reader(threading.Thread):
         self = userdata
         self.__logger.info("connected")
         self.__client.subscribe("sdr/spectrogram/+/+")
-        self.__client.subscribe("sdr/+/transmission")
-        self.__client.subscribe("sdr/+/transmission/+")
+        self.__client.subscribe("sdr/transmission/+/+")
         self.__client.subscribe("sdr/scheduler/+/+/get")
         self.__client.subscribe("sdr/gain_test/+/+/start")
         self.__client.subscribe("sdr/gain_test/+/+/stop")
