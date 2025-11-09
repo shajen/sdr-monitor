@@ -3,18 +3,19 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from humanize import naturalsize
 from sdr.models import *
+import base64
+import json
 import logging
 import numpy as np
 import re
 import sdr.utils.device
 import sdr.utils.file
-import struct
 
 
 class SpectrogramReader:
     def __init__(self):
         self.__logger = logging.getLogger("Spectrogram")
-        self.__regex = re.compile("sdr/([\\w\\.]+)/spectrogram")
+        self.__regex = re.compile("sdr/spectrogram/\\w+/([\\w\\.]+)")
 
     def get_device(self, name):
         try:
@@ -35,9 +36,6 @@ class SpectrogramReader:
         self.__logger.info("total data shape: %s, size: %s" % (str(data.shape), naturalsize(data.size)))
 
     def append_spectrogram(self, device, dt, begin_frequency, end_frequency, step_frequency, data):
-        self.__logger.debug(
-            "save, %s, %s, %d - %d, %s, %.2f dBfs" % (device, dt.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3], begin_frequency, end_frequency, naturalsize(data.size), np.mean(data))
-        )
         begin_model_date = self.round_down_date(dt)
         end_model_date = self.round_up_date(dt)
         device = self.get_device(device)
@@ -67,7 +65,7 @@ class SpectrogramReader:
             )
 
         with open(s.data_file.path, "ab") as file:
-            file.write(data.tobytes())
+            file.write(data)
         s.labels += np.array([int(dt.timestamp() * 1000)]).astype(np.uint64).tobytes()
         s.end_real_date = dt
         s.save()
@@ -77,9 +75,16 @@ class SpectrogramReader:
         topic = message.topic
         m = self.__regex.match(topic)
         if m:
-            (timestamp, begin_frequency, end_frequency, step_frequency, samples_count) = struct.unpack("<QLLLL", message.payload[:24])
-            dt = make_aware(timezone.datetime.fromtimestamp(timestamp / 1000))
-            powers = np.array(struct.unpack("<%db" % samples_count, message.payload[24:])).astype(np.int8)
-            self.append_spectrogram(m.group(1), dt, begin_frequency, end_frequency, step_frequency, powers)
+            device = m.group(1)
+            message = json.loads(message.payload.decode("utf-8"))
+            data = base64.b64decode(message["data"])
+            frequency = message["frequency"]
+            sample_rate = message["sample_rate"]
+            begin_frequency = frequency - sample_rate // 2
+            end_frequency = frequency + sample_rate // 2
+            step_frequency = sample_rate // len(data)
+            dt = make_aware(timezone.datetime.fromtimestamp(message["time"] / 1000))
+            self.__logger.info(f"device: {device}, frequency: {frequency}, sample_rate: {sample_rate}, step: {step_frequency}, datetime: {dt}, data size: {naturalsize(len(data))}")
+            self.append_spectrogram(m.group(1), dt, begin_frequency, end_frequency, step_frequency, data)
             return True
         return False

@@ -37,7 +37,7 @@ class Reader(threading.Thread):
     def on_connect(client, userdata, flags, rc):
         self = userdata
         self.__logger.info("connected")
-        self.__client.subscribe("sdr/+/spectrogram")
+        self.__client.subscribe("sdr/spectrogram/+/+")
         self.__client.subscribe("sdr/+/transmission")
         self.__client.subscribe("sdr/+/transmission/+")
         self.__client.subscribe("sdr/scheduler/+/+/get")
