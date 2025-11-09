@@ -1,13 +1,13 @@
-{% extends "generic/simple_big.html" %}
+{% extends "generic/section_big.html" %}
 {% load i18n %}
 {% load sdr_filters %}
 {% load static %}
 
-{% block simple_title %}
+{% block section_title %}
 Gain test - {{ name }}
 {% endblock %}
 
-{% block simple_content %}
+{% block section_content %}
 <div class="row">
     <h3 class="text-center"> {{ begin_real_date }} - {{ end_real_date }} </h3>
     <div id="scrollable-main-image" class="horizontal dragscroll" style="overflow-x: auto;">

@@ -1,12 +1,12 @@
-{% extends "generic/dialog.html" %}
+{% extends "generic/section_dialog.html" %}
 {% load i18n %}
 {% load crispy_forms_tags %}
 {% load sdr_filters %}
 {% load static %}
 
-{% block dialog_title %}Monitor settings{% endblock %}
+{% block section_title %}Monitor settings{% endblock %}
 
-{% block dialog_content %}
+{% block section_content %}
 <div class="row mt-2">
     <form method="post">
         {% csrf_token %}

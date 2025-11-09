@@ -1,9 +1,9 @@
-{% extends "generic/simple_big.html" %}
+{% extends "generic/section_big.html" %}
 {% load i18n %}
 {% load sdr_filters %}
 {% load static %}
 
-{% block simple_title %}
+{% block section_title %}
 Spectrogram - {{ spectrogram.frequency | frequency }} - {{ spectrogram.sample_rate | frequency}}
 {% endblock %}
 
@@ -25,7 +25,7 @@ Spectrogram - {{ spectrogram.frequency | frequency }} - {{ spectrogram.sample_ra
 </div>
 {% endblock %}
 
-{% block simple_content %}
+{% block section_content %}
 <div class="row mt-2">
     <div class="col-12">
         <h3>Spectrogram range: {{ spectrogram.begin_real_date }} - {{ spectrogram.end_real_date }}

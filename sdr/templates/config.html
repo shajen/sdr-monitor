@@ -1,15 +1,15 @@
-{% extends "generic/simple_small.html" %}
+{% extends "generic/section_small.html" %}
 {% load i18n %}
 {% load sdr_filters %}
 {% load static %}
 
-{% block simple_title %}Sdr settings{% endblock %}
+{% block section_title %}Sdr settings{% endblock %}
 
 {% block main_scripts %}
 <script src="{% static 'js/config.js' %}"></script>
 {% endblock %}
 
-{% block simple_content %}
+{% block section_content %}
 <div class="modal fade" id="save_success" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

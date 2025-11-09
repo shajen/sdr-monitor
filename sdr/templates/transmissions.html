@@ -1,10 +1,10 @@
-{% extends "generic/simple_big.html" %}
+{% extends "generic/section_big.html" %}
 {% load i18n %}
 {% load sdr_filters %}
 
-{% block simple_title %}{% trans "TRANSMISSIONS" %}: {{items.paginator.count}}{% endblock %}
+{% block section_title %}{% trans "TRANSMISSIONS" %}: {{items.paginator.count}}{% endblock %}
 
-{% block simple_content %}
+{% block section_content %}
 <div class="row mt-2">
     <div class="col-12">
         <div class="table-responsive">
