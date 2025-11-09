@@ -63,6 +63,7 @@ class SatellitesFlightReader:
             results.append(
                 {
                     "id": satellite["id"],
+                    "source": "satellites",
                     "name": satellite["name"],
                     "begin": _begin,
                     "end": _end,

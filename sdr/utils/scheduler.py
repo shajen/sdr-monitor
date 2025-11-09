@@ -32,6 +32,7 @@ class Scheduler:
             for dt in self.__get_expression_execution_times(crontab["expression"], datetime.timedelta(minutes=90)):
                 scheduled_transmissions.append(
                     {
+                        "source": "scheduler",
                         "name": crontab["name"],
                         "begin": int(dt.timestamp()),
                         "end": int((dt + datetime.timedelta(seconds=crontab["duration"])).timestamp()),
