@@ -23,7 +23,7 @@ class TransmissionReader:
         except ObjectDoesNotExist:
             return Device.objects.create(name=sdr.utils.device.convert_raw_to_name_to_pretty_name(name), raw_name=name)
 
-    def append_transmission(self, device, dt, begin_frequency, end_frequency, samples, sample_size, sample_type):
+    def append_transmission(self, device, dt, begin_frequency, end_frequency, samples, sample_size, sample_type, source, name):
         device = self.get_device(device)
         frequency = (begin_frequency + end_frequency) // 2
         try:
@@ -45,6 +45,8 @@ class TransmissionReader:
                 sample_size=sample_size,
                 data_type=sample_type,
                 group_id=group_id,
+                source=source,
+                name=name,
             )
             t.end_date = dt
         except Transmission.DoesNotExist:
@@ -60,6 +62,8 @@ class TransmissionReader:
                 data_file=filename,
                 data_type=sample_type,
                 group_id=group_id,
+                source=source,
+                name=name,
             )
         self.__logger.debug("new size: %d = %d x %d, size: %s" % (len(samples), len(samples) / sample_size, sample_size, naturalsize(sample_size)))
         with open(t.data_file.path, "ab") as file:
@@ -74,12 +78,16 @@ class TransmissionReader:
             device = m.group(1)
             message = json.loads(message.payload.decode("utf-8"))
             data = base64.b64decode(message["data"])
+            source = message["source"]
+            name = message["name"]
             frequency = message["frequency"]
             bandwidth = message["bandwidth"]
             begin_frequency = frequency - bandwidth // 2
             end_frequency = frequency + bandwidth // 2
             dt = make_aware(timezone.datetime.fromtimestamp(message["time"] / 1000))
-            self.__logger.info(f"device: {device}, frequency: {frequency}, bandwidth: {bandwidth}, datetime: {dt}, data size: {naturalsize(len(data))}")
-            self.append_transmission(device, dt, begin_frequency, end_frequency, data, bandwidth, "uint8")
+            self.__logger.info(
+                f"source: {source}, name: {name}, device: {device}, frequency: {frequency}, bandwidth: {bandwidth}, datetime: {dt}, data size: {naturalsize(len(data))}"
+            )
+            self.append_transmission(device, dt, begin_frequency, end_frequency, data, bandwidth, "uint8", source, name)
             return True
         return False

@@ -45,7 +45,7 @@ def spectrograms(request):
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
         duration=TruncSecond("end_real_date") - TruncSecond("begin_real_date"),
     )
-    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name"])
+    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name", "source"])
     items = common.utils.filters.filter(request, items)
     items = common.utils.filters.order_by(request, items, ["-datetime", "frequency", "device_name"])
     page_size = int(request.GET.get("page_size", "100"))
@@ -114,7 +114,7 @@ def transmissions(request):
             class_subname=F("audio_class__subname"),
         )
     )
-    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name", "modulation", "group_name", "class_name"])
+    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name", "modulation", "group_name", "class_name", "name"])
     items = common.utils.filters.filter(request, items)
     items = common.utils.filters.order_by(request, items, ["-datetime", "frequency"])
     page_size = int(request.GET.get("page_size", "100"))

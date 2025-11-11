@@ -24,6 +24,7 @@ class SpectrogramAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "device",
+        "source",
         "begin_frequency",
         "end_frequency",
         "step_frequency",
@@ -49,6 +50,8 @@ class TransmissionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "device",
+        "source",
+        "name",
         "middle_frequency",
         "group",
         "audio_class",

@@ -12,6 +12,7 @@
                 <tr>
                     <form action="{% url 'sdr_transmissions' %}" method="get">
                         {% include "generic/headers/filter_string.html" with field="device_name" options=device_name_options %}
+                        {% include "generic/headers/filter_string.html" with field="name" options=name_options %}
                         {% include "generic/headers/filter_number.html" with field="datetime" %}
                         {% include "generic/headers/filter_number.html" with field="duration" %}
                         {% include "generic/headers/filter_number.html" with field="frequency" %}
@@ -27,6 +28,7 @@
                 </tr>
                 <tr>
                     {% include "generic/headers/sort.html" with name="Device" field="device_name" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Name" field="name" col="1" %}
                     {% include "generic/headers/sort.html" with name="Date" field="datetime" col="1" %}
                     {% include "generic/headers/sort.html" with name="Duration" field="duration" col="1" %}
                     {% include "generic/headers/sort.html" with name="Frequency" field="frequency" col="1" %}
@@ -43,6 +45,7 @@
                 {% for transmission in items %}
                 <tr>
                     <td class="py-1">{{ transmission.device_name }}</td>
+                    <td class="py-1">{{ transmission.name }}</td>
                     <td class="py-1">
                         <nobr>
                             {{ transmission.datetime|date:"Y-m-d" }}

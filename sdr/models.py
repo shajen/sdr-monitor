@@ -33,6 +33,7 @@ class Spectrogram(models.Model):
     labels = models.BinaryField("Labels")
     data_file = models.FileField("Data file", upload_to="spectrogram/%Y-%m-%d/")
     device = models.ForeignKey(Device, on_delete=models.CASCADE, default=get_default_device_id)
+    source = models.CharField("Source", max_length=255)
 
     class Meta:
         unique_together = ("device", "begin_frequency", "end_frequency", "step_frequency", "begin_model_date", "end_model_date")
@@ -71,6 +72,8 @@ class Transmission(models.Model):
     audio_class = models.ForeignKey(AudioClass, on_delete=models.CASCADE, default=get_default_audio_class_id)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, default=get_default_group_id)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, default=get_default_device_id)
+    source = models.CharField("Source", max_length=255)
+    name = models.CharField("Name", max_length=255)
 
     def duration(self):
         return timedelta(seconds=round((self.end_date - self.begin_date).total_seconds()))

@@ -35,7 +35,7 @@ class SpectrogramReader:
         data = np.memmap(s.data_file.path, dtype=np.uint8, mode="r", shape=(y_size, x_size))
         self.__logger.info("total data shape: %s, size: %s" % (str(data.shape), naturalsize(data.size)))
 
-    def append_spectrogram(self, device, dt, begin_frequency, end_frequency, step_frequency, data):
+    def append_spectrogram(self, device, dt, begin_frequency, end_frequency, step_frequency, data, source):
         begin_model_date = self.round_down_date(dt)
         end_model_date = self.round_up_date(dt)
         device = self.get_device(device)
@@ -47,6 +47,7 @@ class SpectrogramReader:
                 step_frequency=step_frequency,
                 begin_model_date=begin_model_date,
                 end_model_date=end_model_date,
+                source=source,
             )
         except Spectrogram.DoesNotExist:
             f = (begin_frequency + end_frequency) // 2
@@ -62,6 +63,7 @@ class SpectrogramReader:
                 begin_real_date=dt,
                 end_real_date=dt,
                 data_file=filename,
+                source=source,
             )
 
         with open(s.data_file.path, "ab") as file:
@@ -78,13 +80,16 @@ class SpectrogramReader:
             device = m.group(1)
             message = json.loads(message.payload.decode("utf-8"))
             data = base64.b64decode(message["data"])
+            source = message["source"]
             frequency = message["frequency"]
             sample_rate = message["sample_rate"]
             begin_frequency = frequency - sample_rate // 2
             end_frequency = frequency + sample_rate // 2
             step_frequency = sample_rate // len(data)
             dt = make_aware(timezone.datetime.fromtimestamp(message["time"] / 1000))
-            self.__logger.info(f"device: {device}, frequency: {frequency}, sample_rate: {sample_rate}, step: {step_frequency}, datetime: {dt}, data size: {naturalsize(len(data))}")
-            self.append_spectrogram(m.group(1), dt, begin_frequency, end_frequency, step_frequency, data)
+            self.__logger.info(
+                f"source: {source}, device: {device}, frequency: {frequency}, sample_rate: {sample_rate}, step: {step_frequency}, datetime: {dt}, data size: {naturalsize(len(data))}"
+            )
+            self.append_spectrogram(m.group(1), dt, begin_frequency, end_frequency, step_frequency, data, source)
             return True
         return False

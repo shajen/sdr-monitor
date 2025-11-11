@@ -12,6 +12,7 @@
                 <tr>
                     <form action="{% url 'sdr_spectrograms' %}" method="get">
                         {% include "generic/headers/filter_string.html" with field="device_name" options=device_name_options %}
+                        {% include "generic/headers/filter_string.html" with field="source" options=source_options %}
                         {% include "generic/headers/filter_number.html" with field="datetime" %}
                         {% include "generic/headers/filter_number.html" with field="samples" %}
                         {% include "generic/headers/filter_number.html" with field="frequency" %}
@@ -26,6 +27,7 @@
                 </tr>
                 <tr>
                     {% include "generic/headers/sort.html" with name="Device" field="device_name" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Source" field="source" col="1" %}
                     {% include "generic/headers/sort.html" with name="Date" field="datetime" col="1" %}
                     {% include "generic/headers/sort.html" with name="Samples count" field="samples" col="1" %}
                     {% include "generic/headers/sort.html" with name="Frequency" field="frequency" col="1" %}
@@ -36,6 +38,7 @@
                 {% for spectrogram in items %}
                 <tr>
                     <td class="py-1">{{ spectrogram.device_name }}</td>
+                    <td class="py-1">{{ spectrogram.source }}</td>
                     <td class="py-1">{{ spectrogram.date }}</td>
                     <td class="py-1">{{ spectrogram.samples | big_number }}</td>
                     <td class="py-1">{{ spectrogram.frequency|frequency }}</td>
