@@ -31,12 +31,7 @@
                     {% include "generic/headers/sort.html" with name="Frequency" field="frequency" col="1" %}
                     {% include "generic/headers/sort.html" with name="Sample rate" field="sample_rate" col="1" %}
                     {% include "generic/headers/sort.html" with name="Step frequency" field="step_frequency" col="1" %}
-                    <th class="col-md-1">
-                        Static graph (fast)
-                    </th>
-                    <th class="col-md-1">
-                        Active graph (slow)
-                    </th>
+                    <th class="col-md-1">Details</th>
                 </tr>
                 {% for spectrogram in items %}
                 <tr>
@@ -47,11 +42,7 @@
                     <td class="py-1">{{ spectrogram.sample_rate|frequency }}</td>
                     <td class="py-1">{{ spectrogram.step_frequency|frequency }} </td>
                     <td class="py-1">
-                        <a href="{% url 'sdr_spectrogram' spectrogram.id %}?mode=static" class="btn btn-primary">static </a>
-                    </td>
-                    <td class="py-1">
-                        <a href="{% url 'sdr_spectrogram' spectrogram.id %}?mode=dynamic" class="btn btn-primary">active
-                        </a>
+                        <a href="{% url 'sdr_spectrogram' spectrogram.id %}?mode=static" class="btn btn-primary">open </a>
                     </td>
                 </tr>
                 {% endfor %}
