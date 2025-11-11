@@ -46,13 +46,13 @@ class GainTesterThread(threading.Thread):
         return self.__get_device(config)["gains"]
 
     def __update_config(self, config, gains):
-        config["crontabs"] = []
-        config["satellites"] = []
         alias = self.__alias
         for key in sorted(gains.keys()):
             alias += f"_{key}_{gains[key]:02.1f}"
         self.__logger.debug(f"alias: {alias}")
         _device = self.__get_device(config)
+        _device["crontabs"] = []
+        _device["satellites"] = []
         _device["alias"] = alias
         _device["sample_rate"] = self.__sample_rate
         _device["ranges"] = [self.__frequency_range]
