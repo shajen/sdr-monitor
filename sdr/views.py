@@ -36,7 +36,11 @@ def get_download_raw_iq_filename(name, id, frequency, sample_rate, dt):
 @login_required()
 @permission_required("sdr.view_spectrogram", raise_exception=True)
 def spectrograms(request):
-    items = Spectrogram.objects.select_related("device").annotate(
+    if AppSettings.get(AppSettingsKey.GAIN_TESTER_DATA_ENABLED):
+        items = Spectrogram.objects
+    else:
+        items = Spectrogram.objects.exclude(source="gain tester")
+    items = items.select_related("device").annotate(
         device_name=F("device__name"),
         datetime=F("begin_model_date"),
         date=TruncDate("begin_model_date"),
@@ -100,8 +104,12 @@ def spectrogram_data(request, spectrogram_id):
 @login_required()
 @permission_required("sdr.view_transmission", raise_exception=True)
 def transmissions(request):
+    if AppSettings.get(AppSettingsKey.GAIN_TESTER_DATA_ENABLED):
+        items = Transmission.objects
+    else:
+        items = Transmission.objects.exclude(source="gain tester")
     items = (
-        Transmission.objects.select_related("device")
+        items.select_related("device")
         .select_related("group")
         .annotate(
             device_name=F("device__name"),
