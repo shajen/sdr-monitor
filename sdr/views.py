@@ -298,7 +298,7 @@ def gain_tests(request):
 def gain_test(request, gain_test_id):
     gain_test = GainTest.objects.get(id=gain_test_id)
     devices = Device.objects.filter(name__startswith=gain_test.device_prefix)
-    spectrograms = Spectrogram.objects.filter(device__in=devices).select_related("device").order_by("device__name", "begin_real_date")
+    spectrograms = Spectrogram.objects.filter(device__in=devices).select_related("device").order_by("begin_real_date")
     real_date = Spectrogram.objects.filter(device__in=devices).aggregate(begin_real_date=Min("begin_real_date"), end_real_date=Max("end_real_date"))
     if len(spectrograms) == 0:
         raise Http404()
