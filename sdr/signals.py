@@ -29,19 +29,20 @@ def make_spectrogram(data, sample_rate):
     return out
 
 
-def decode_audio(in_file, out_file, modulation, sample_rate):
+def decode_audio(in_file, out_file, modulation, sample_rate, out_rate=32000):
+    out_rate = min(sample_rate, out_rate)
     if modulation == "FM":
         if 75000 <= sample_rate:
-            decoder = sdr.decoders.wfm_decoder.wfm_decoder(in_file, out_file, sample_rate)
+            decoder = sdr.decoders.wfm_decoder.wfm_decoder(in_file, sample_rate, out_rate)
         else:
-            decoder = sdr.decoders.fm_decoder.fm_decoder(in_file, out_file, sample_rate)
+            decoder = sdr.decoders.fm_decoder.fm_decoder(in_file, sample_rate, out_rate)
     elif modulation == "AM":
-        decoder = sdr.decoders.am_decoder.am_decoder(in_file, out_file, sample_rate)
+        decoder = sdr.decoders.am_decoder.am_decoder(in_file, sample_rate, out_rate)
     else:
         return []
 
     if out_file:
-        wav_block = blocks.wavfile_sink(out_file, 1, sample_rate, blocks.FORMAT_WAV, blocks.FORMAT_PCM_16, False)
+        wav_block = blocks.wavfile_sink(out_file, 1, out_rate, blocks.FORMAT_WAV, blocks.FORMAT_PCM_16, False)
         decoder.connect((decoder.blocks_multiply_const_vxx_0, 0), (wav_block, 0))
         decoder.run()
     else:
