@@ -77,7 +77,7 @@ class TransmissionReader:
         if m:
             device = m.group(1)
             message = json.loads(message.payload.decode("utf-8"))
-            data = base64.b64decode(message["data"])
+            data = bytearray(b ^ 0x80 for b in base64.b64decode(message["data"]))
             source = message["source"]
             name = message["name"]
             frequency = message["frequency"]
