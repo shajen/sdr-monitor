@@ -29,8 +29,8 @@ def get_download_filename(name, id, extension, dt):
     return "%s%d_%s.%s" % (name, id, localtime(dt).strftime("%Y%m%d_%H%M%S"), extension)
 
 
-def get_download_raw_iq_filename(name, id, frequency, sample_rate, dt):
-    return "%s%d_%s_%d_%d_fc.raw" % (name, id, localtime(dt).strftime("%Y%m%d_%H%M%S"), frequency, sample_rate)
+def get_download_raw_iq_filename(name, id, type, frequency, sample_rate, dt):
+    return "%s%d_%s_%d_%d_%s.raw" % (name, id, localtime(dt).strftime("%Y%m%d_%H%M%S"), frequency, sample_rate, type)
 
 
 @login_required()
@@ -154,8 +154,8 @@ def transmission_data(request, transmission_id):
         drawer = sdr.drawer.Drawer(frequency_labels_count=8, draw_time=False, draw_power=True, text_size=16, text_stroke=2, min_width=1024)
         drawer.draw_spectrogram(data, filename, data.shape[1], data.shape[0], t.begin_frequency, t.end_frequency, list(range(data.shape[0])))
         return file_response(filename)
-    elif format == "raw":
-        filename = get_download_raw_iq_filename("transmission", t.id, t.middle_frequency(), sample_rate, t.begin_date)
+    elif format == "raw_complex64":
+        filename = get_download_raw_iq_filename("transmission", t.id, "fc", t.middle_frequency(), sample_rate, t.begin_date)
         block_size = 10 * 2**10 * 2**10
         if os.path.exists(filename):
             os.remove(filename)
@@ -163,6 +163,9 @@ def transmission_data(request, transmission_id):
             with open(filename, "ab") as file:
                 file.write(convert_uint8_to_float32(data[i * block_size : (i + 1) * block_size]).tobytes())
         return file_response(filename)
+    elif format == "raw":
+        filename = get_download_raw_iq_filename("transmission", t.id, "cu8", t.middle_frequency(), sample_rate, t.begin_date)
+        return redirect_file_response(t.data_file.url, filename)
     elif t.group.modulation in ["FM", "AM"]:
         filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
         sdr.signals.decode_audio(t.data_file.path, filename, t.group.modulation, sample_rate)

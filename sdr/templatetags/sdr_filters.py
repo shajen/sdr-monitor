@@ -30,7 +30,7 @@ def frequency(value, force_segment=None):
 
 
 def natural_size(value):
-    return humanize.naturalsize(value)
+    return humanize.naturalsize(value, True)
 
 
 def big_number(value):
