@@ -58,7 +58,7 @@ class Classifier(threading.Thread):
     def get_class(self, t):
         try:
             sample_rate = t.end_frequency - t.begin_frequency
-            if t.group.modulation in ["FM", "AM"] and os.path.isfile(t.data_file.path):
+            if os.path.isfile(t.data_file.path):
                 data = sdr.signals.decode_audio(t.data_file.path, None, t.group.modulation, sample_rate, 16000)
                 return self.classifiy(np.array(data).astype(np.float32))
             else:
@@ -75,7 +75,7 @@ class Classifier(threading.Thread):
             now = timezone.now()
             cut_dt = now - timezone.timedelta(minutes=1)
             for t in Transmission.objects.filter(end_date__lt=cut_dt, audio_class_id=default_audio_class_id).order_by("-end_date").all():
-                if t.duration() <= timezone.timedelta(minutes=5):
+                if t.duration() <= timezone.timedelta(minutes=5) and t.group.modulation in ["FM", "AM"]:
                     class_name = self.get_class(t)
                     t.audio_class_id = self.get_audio_class_id(class_name)
                     t.save()
