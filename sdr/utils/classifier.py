@@ -24,7 +24,7 @@ class Classifier(threading.Thread):
         self.__class_names = self.class_names_from_csv(open("ai/yamnet_class_map.csv").read())
 
     def get_audio_class_id(self, subname):
-        if subname in ["Speech", "Unknown"]:
+        if subname in ["Speech", "Music", "Unknown"]:
             name = subname
         else:
             name = "Noise"
@@ -59,7 +59,7 @@ class Classifier(threading.Thread):
         try:
             sample_rate = t.end_frequency - t.begin_frequency
             if t.group.modulation in ["FM", "AM"] and os.path.isfile(t.data_file.path):
-                data = sdr.signals.decode_audio(t.data_file.path, None, t.group.modulation, sample_rate)
+                data = sdr.signals.decode_audio(t.data_file.path, None, t.group.modulation, sample_rate, 16000)
                 return self.classifiy(np.array(data).astype(np.float32))
             else:
                 return "Unknown"
@@ -75,12 +75,13 @@ class Classifier(threading.Thread):
             now = timezone.now()
             cut_dt = now - timezone.timedelta(minutes=1)
             for t in Transmission.objects.filter(end_date__lt=cut_dt, audio_class_id=default_audio_class_id).order_by("-end_date").all():
-                class_name = self.get_class(t)
-                t.audio_class_id = self.get_audio_class_id(class_name)
-                t.save()
-                self.__logger.info("transmission, id: %d, frequency: %d Hz, date: %s, class: %s " % (t.id, t.middle_frequency(), localtime(t.end_date), class_name))
-                if not self.__is_working:
-                    break
+                if t.duration() <= timezone.timedelta(minutes=5):
+                    class_name = self.get_class(t)
+                    t.audio_class_id = self.get_audio_class_id(class_name)
+                    t.save()
+                    self.__logger.info("transmission, id: %d, frequency: %d Hz, date: %s, class: %s " % (t.id, t.middle_frequency(), localtime(t.end_date), class_name))
+                    if not self.__is_working:
+                        break
             time.sleep(1)
         self.__logger.debug("stop")
 

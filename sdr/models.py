@@ -52,7 +52,7 @@ class Group(models.Model):
 
 class AudioClass(models.Model):
     name = models.CharField("Name", max_length=255)
-    subname = models.CharField("Subname", max_length=255, unique=True)
+    subname = models.CharField("Subname", max_length=255)
 
     class Meta:
         unique_together = ("name", "subname")
