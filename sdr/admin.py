@@ -51,7 +51,6 @@ class TransmissionAdmin(admin.ModelAdmin):
         "id",
         "device",
         "source",
-        "name",
         "middle_frequency",
         "group",
         "audio_class",

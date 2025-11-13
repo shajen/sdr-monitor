@@ -21,6 +21,7 @@ import math
 import monitor.settings
 import numpy as np
 import sdr.drawer
+import sdr.utils.group
 import sdr.utils.satellites
 import uuid
 
@@ -122,7 +123,7 @@ def transmissions(request):
             class_subname=F("audio_class__subname"),
         )
     )
-    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name", "modulation", "group_name", "class_name", "name"])
+    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name", "modulation", "group_name", "class_name"])
     items = common.utils.filters.filter(request, items)
     items = common.utils.filters.order_by(request, items, ["-datetime", "frequency"])
     page_size = int(request.GET.get("page_size", "100"))
@@ -189,11 +190,7 @@ def groups(request, message_success="", message_error=""):
 @staff_member_required()
 @permission_required("sdr.change_group", raise_exception=True)
 def update_groups(request):
-    Transmission.objects.update(group_id=get_default_group_id())
-    for group in sdr.models.Group.objects.annotate(bandwidth=F("end_frequency") - F("begin_frequency")).order_by("-bandwidth").all():
-        Transmission.objects.annotate(frequency=(F("begin_frequency") + F("end_frequency")) / 2).filter(
-            frequency__gte=group.begin_frequency, frequency__lte=group.end_frequency
-        ).update(group_id=group.id)
+    sdr.utils.group.update_groups()
 
 
 @staff_member_required()
@@ -205,7 +202,7 @@ def add_group(request):
         end_frequency = int(request.GET["end_frequency"])
         modulation = request.GET["modulation"]
         Group.objects.get_or_create(name=name, begin_frequency=begin_frequency, end_frequency=end_frequency, modulation=modulation)
-        update_groups(request)
+        sdr.utils.group.update_groups()
         return groups(request, "Success!", "")
     except:
         return groups(request, "", "Error!")
@@ -221,7 +218,7 @@ def delete_group(request, group_id):
         else:
             Group.objects.get(id=group_id).transmission_set.update(group_id=default_group_id)
             Group.objects.filter(id=group_id).delete()
-            update_groups(request)
+            sdr.utils.group.update_groups()
             return groups(request, "Success!", "")
     except:
         return groups(request, "", "Error!")

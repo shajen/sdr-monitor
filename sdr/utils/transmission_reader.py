@@ -10,6 +10,7 @@ import logging
 import re
 import sdr.utils.device
 import sdr.utils.file
+import sdr.utils.group
 
 
 class TransmissionReader:
@@ -23,16 +24,23 @@ class TransmissionReader:
         except ObjectDoesNotExist:
             return Device.objects.create(name=sdr.utils.device.convert_raw_to_name_to_pretty_name(name), raw_name=name)
 
-    def append_transmission(self, device, dt, begin_frequency, end_frequency, samples, sample_size, sample_type, source, name):
+    def append_transmission(self, device, dt, begin_frequency, end_frequency, samples, sample_size, modulation, sample_type, source, name):
         device = self.get_device(device)
         frequency = (begin_frequency + end_frequency) // 2
         try:
-            group_id = (
-                Group.objects.annotate(bandwidth=F("end_frequency") - F("begin_frequency"))
-                .order_by("bandwidth")
-                .filter(begin_frequency__lte=frequency, end_frequency__gte=frequency)[0]
-                .id
-            )
+            if name and modulation:
+                group, created = Group.objects.get_or_create(name=name, begin_frequency=frequency, end_frequency=frequency, modulation=modulation)
+                group_id = group.id
+                if created:
+                    self.__logger.info(f"created group, name: {name}, frequency: {frequency}, modulation: {modulation}")
+                    sdr.utils.group.update_groups()
+            else:
+                group_id = (
+                    Group.objects.annotate(bandwidth=F("end_frequency") - F("begin_frequency"))
+                    .order_by("bandwidth")
+                    .filter(begin_frequency__lte=frequency, end_frequency__gte=frequency)[0]
+                    .id
+                )
         except:
             group_id = get_default_group_id()
         try:
@@ -46,7 +54,6 @@ class TransmissionReader:
                 data_type=sample_type,
                 group_id=group_id,
                 source=source,
-                name=name,
             )
             t.end_date = dt
         except Transmission.DoesNotExist:
@@ -63,7 +70,6 @@ class TransmissionReader:
                 data_type=sample_type,
                 group_id=group_id,
                 source=source,
-                name=name,
             )
         self.__logger.debug("new size: %d = %d x %d, size: %s" % (len(samples), len(samples) / sample_size, sample_size, naturalsize(sample_size)))
         with open(t.data_file.path, "ab") as file:
@@ -82,12 +88,13 @@ class TransmissionReader:
             name = message["name"]
             frequency = message["frequency"]
             bandwidth = message["bandwidth"]
+            modulation = message["modulation"]
             begin_frequency = frequency - bandwidth // 2
             end_frequency = frequency + bandwidth // 2
             dt = make_aware(timezone.datetime.fromtimestamp(message["time"] / 1000))
             self.__logger.info(
-                f"source: {source}, name: {name}, device: {device}, frequency: {frequency}, bandwidth: {bandwidth}, datetime: {dt}, data size: {naturalsize(len(data))}"
+                f"source: {source}, name: {name}, device: {device}, frequency: {frequency}, bandwidth: {bandwidth}, modulation: {modulation}, datetime: {dt}, data size: {naturalsize(len(data))}"
             )
-            self.append_transmission(device, dt, begin_frequency, end_frequency, data, bandwidth, "uint8", source, name)
+            self.append_transmission(device, dt, begin_frequency, end_frequency, data, bandwidth, modulation, "uint8", source, name)
             return True
         return False

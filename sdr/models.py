@@ -40,14 +40,24 @@ class Spectrogram(models.Model):
 
 
 class Group(models.Model):
-    name = models.CharField("Name", max_length=255, unique=True)
+    name = models.CharField("Name", max_length=255)
     modulation = models.CharField("Modulation", max_length=255)
     begin_frequency = models.PositiveBigIntegerField("Begin frequency", db_index=True)
     end_frequency = models.PositiveBigIntegerField("End frequency", db_index=True)
     data_type = models.CharField("Data type", max_length=255, default="audio")
 
+    class Meta:
+        unique_together = ("name", "modulation", "begin_frequency", "end_frequency")
+
     def __str__(self):
         return "%s - %s" % (self.name, self.modulation)
+
+    def save(self, *args, **kwargs):
+        if self.modulation in ["AM", "FM"]:
+            self.data_type = "audio"
+        else:
+            self.data_type = "data"
+        super().save(*args, **kwargs)
 
 
 class AudioClass(models.Model):
@@ -73,7 +83,6 @@ class Transmission(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, default=get_default_group_id)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, default=get_default_device_id)
     source = models.CharField("Source", max_length=255)
-    name = models.CharField("Name", max_length=255)
 
     def duration(self):
         return timedelta(seconds=round((self.end_date - self.begin_date).total_seconds()))
