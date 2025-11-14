@@ -1,10 +1,14 @@
 from gnuradio import blocks
 import astropy.nddata
+import io
 import math
 import numpy as np
+import os
 import sdr.decoders.am_decoder
 import sdr.decoders.fm_decoder
 import sdr.decoders.wfm_decoder
+import struct
+import wave
 
 
 def convert_uint8_to_float32_stream(file_path: str, chunk_size: int = 16 * 1024 * 1024):
@@ -16,6 +20,46 @@ def convert_uint8_to_float32_stream(file_path: str, chunk_size: int = 16 * 1024 
             arr = np.frombuffer(chunk, dtype=np.uint8)
             norm = (arr.astype(np.float32) - 127.5) / 127.5
             yield norm.astype(np.float32).tobytes()
+
+
+def wav_header_from_cu8_pcm16(path, sample_rate):
+    num_audio_frames = os.path.getsize(path) // 2
+    header_buffer = io.BytesIO()
+    with wave.open(header_buffer, "wb") as wav:
+        wav.setnchannels(2)
+        wav.setsampwidth(2)
+        wav.setframerate(sample_rate)
+        wav.setnframes(num_audio_frames)
+
+    data_length = num_audio_frames * 2 * 2
+    data = bytearray(header_buffer.getvalue())
+    data[4:8] = struct.pack("<i", 36 + data_length)
+    data[40:44] = struct.pack("<i", data_length)
+    return bytes(data)
+
+
+def wav_stream_from_cu8_pcm16(path, sample_rate, chunk_size=16 * 1024 * 1024):
+    header = wav_header_from_cu8_pcm16(path, sample_rate)
+    yield header
+
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(chunk_size)
+            if not chunk:
+                break
+
+            arr = np.frombuffer(chunk, dtype=np.uint8)
+            arr = arr[: (len(arr) // 2) * 2]
+
+            I = arr[0::2].astype(np.float32)
+            Q = arr[1::2].astype(np.float32)
+            I = ((I - 128.0) * 256.0).astype(np.int16)
+            Q = ((Q - 128.0) * 256.0).astype(np.int16)
+            inter = np.empty(I.size * 2, dtype=np.int16)
+            inter[0::2] = I
+            inter[1::2] = Q
+
+            yield inter.tobytes()
 
 
 def make_spectrogram(data, sample_rate):

@@ -30,8 +30,8 @@ def get_download_filename(name, id, extension, dt):
     return "%s%d_%s.%s" % (name, id, localtime(dt).strftime("%Y%m%d_%H%M%S"), extension)
 
 
-def get_download_raw_iq_filename(name, id, type, frequency, sample_rate, dt):
-    return "%s%d_%s_%d_%d_%s.raw" % (name, id, localtime(dt).strftime("%Y%m%d_%H%M%S"), frequency, sample_rate, type)
+def get_download_raw_iq_filename(name, id, type, extension, frequency, sample_rate, dt):
+    return "%s%d_%s_%d_%d_%s.%s" % (name, id, localtime(dt).strftime("%Y%m%d_%H%M%S"), frequency, sample_rate, type, extension)
 
 
 @login_required()
@@ -157,10 +157,14 @@ def transmission_data(request, transmission_id):
         drawer.draw_spectrogram(data, filename, data.shape[1], data.shape[0], t.begin_frequency, t.end_frequency, list(range(data.shape[0])))
         return file_response(filename)
     elif format == "raw_complex64":
-        filename = get_download_raw_iq_filename("transmission", t.id, "fc", t.middle_frequency(), sample_rate, t.begin_date)
+        filename = get_download_raw_iq_filename("transmission", t.id, "fc", "raw", t.middle_frequency(), sample_rate, t.begin_date)
         return streaming_file_response(filename, convert_uint8_to_float32_stream(t.data_file.path), t.data_file.size * 4)
+    elif format == "raw_wav":
+        filename = get_download_raw_iq_filename("transmission", t.id, "fc", "wav", t.middle_frequency(), sample_rate, t.begin_date)
+        header = wav_header_from_cu8_pcm16(t.data_file.path, sample_rate)
+        return streaming_file_response(filename, wav_stream_from_cu8_pcm16(t.data_file.path, sample_rate), len(header) + t.data_file.size * 2)
     elif format == "raw":
-        filename = get_download_raw_iq_filename("transmission", t.id, "cu8", t.middle_frequency(), sample_rate, t.begin_date)
+        filename = get_download_raw_iq_filename("transmission", t.id, "cu8", "raw", t.middle_frequency(), sample_rate, t.begin_date)
         return redirect_file_response(filename, t.data_file.url)
     elif t.group.modulation in ["FM", "AM"]:
         filename = get_download_filename("transmission", t.id, "wav", t.begin_date)

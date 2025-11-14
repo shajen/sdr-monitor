@@ -24,6 +24,8 @@ Transmission - {{ transmission.frequency | frequency:2 }} - {{transmission.bandw
             raw data (cu8)</a>
         <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_complex64" class="btn btn-primary" download>
             raw data (cf32)</a>
+        <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_wav" class="btn btn-primary" download>
+            raw data (wav)</a>
         <a href="{% url 'sdr_transmission_data' transmission.id %}?format=spectrogram" class="btn btn-primary" download>
             spectrogram</a>
         <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>decoded file</a>
