@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/
 
-RUN pip download --no-binary OpenImageIO openimageio && \
+RUN pip download --no-binary OpenImageIO openimageio==3.0.11.0 && \
     tar -xzf openimageio-*.tar.gz && \
     cd openimageio-* && \
     sed -i '/include (testing)/d' CMakeLists.txt && \
