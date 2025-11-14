@@ -99,7 +99,8 @@ def spectrogram_data(request, spectrogram_id):
         drawer.draw_spectrogram(data, filename, x_size, y_size, s.begin_frequency, s.end_frequency, y_labels)
         return file_response(filename, get_download_filename("spectrogram", s.id, "jpg", s.begin_real_date))
     elif format == "raw":
-        return file_response(s.data_file.path, get_download_filename("spectrogram", s.id, "raw", s.begin_real_date), False)
+        filename = get_download_filename("spectrogram", s.id, "raw", s.begin_real_date)
+        return redirect_file_response(filename, s.data_file.url)
 
 
 @login_required()
@@ -157,16 +158,10 @@ def transmission_data(request, transmission_id):
         return file_response(filename)
     elif format == "raw_complex64":
         filename = get_download_raw_iq_filename("transmission", t.id, "fc", t.middle_frequency(), sample_rate, t.begin_date)
-        block_size = 10 * 2**10 * 2**10
-        if os.path.exists(filename):
-            os.remove(filename)
-        for i in range(math.ceil(data.size / block_size)):
-            with open(filename, "ab") as file:
-                file.write(convert_uint8_to_float32(data[i * block_size : (i + 1) * block_size]).tobytes())
-        return file_response(filename)
+        return streaming_file_response(filename, convert_uint8_to_float32_stream(t.data_file.path), t.data_file.size * 4)
     elif format == "raw":
         filename = get_download_raw_iq_filename("transmission", t.id, "cu8", t.middle_frequency(), sample_rate, t.begin_date)
-        return redirect_file_response(t.data_file.url, filename)
+        return redirect_file_response(filename, t.data_file.url)
     elif t.group.modulation in ["FM", "AM"]:
         filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
         sdr.signals.decode_audio(t.data_file.path, filename, t.group.modulation, sample_rate)

@@ -6,8 +6,15 @@ import sdr.decoders.fm_decoder
 import sdr.decoders.wfm_decoder
 
 
-def convert_uint8_to_float32(data):
-    return (data.astype(np.float32) - 127.5) / 127.5
+def convert_uint8_to_float32_stream(file_path: str, chunk_size: int = 16 * 1024 * 1024):
+    with open(file_path, "rb") as src:
+        while True:
+            chunk = src.read(chunk_size)
+            if not chunk:
+                break
+            arr = np.frombuffer(chunk, dtype=np.uint8)
+            norm = (arr.astype(np.float32) - 127.5) / 127.5
+            yield norm.astype(np.float32).tobytes()
 
 
 def make_spectrogram(data, sample_rate):
