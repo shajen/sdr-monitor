@@ -1,5 +1,6 @@
 from gnuradio import blocks
 import astropy.nddata
+import math
 import numpy as np
 import sdr.decoders.am_decoder
 import sdr.decoders.fm_decoder
@@ -18,8 +19,9 @@ def convert_uint8_to_float32_stream(file_path: str, chunk_size: int = 16 * 1024 
 
 
 def make_spectrogram(data, sample_rate):
-    scale = 2
-    fft = 2**11
+    factor = max(1, int(math.sqrt(sample_rate // 20000)))
+    scale = factor + 1
+    fft = 2 ** (10 + factor)
     out = np.zeros(shape=(data.size // fft // scale // 2, fft // scale), dtype=np.int8)
     window = np.concatenate((np.hanning(fft // 2), np.zeros(fft // 2))).astype(np.float32)
     window = np.repeat([window], scale, axis=0).astype(np.float32)
