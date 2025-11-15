@@ -5,10 +5,11 @@ function gen_decoder {
     rm $python_file
     tmp_file=tmp.txt
     grcc $1
-    sed "s/__init__(self)/__init__(self, in_file, sample_rate, out_rate)/g" $python_file > $tmp_file && mv $tmp_file $python_file
+    sed "s/__init__(self)/__init__(self, in_file, sample_rate, out_rate, duration)/g" $python_file > $tmp_file && mv $tmp_file $python_file
     sed "s/'tmp.raw'/in_file/g" $python_file > $tmp_file && mv $tmp_file $python_file
     sed "s/self\.sample_rate =.*/self.sample_rate = sample_rate/g" $python_file > $tmp_file && mv $tmp_file $python_file
     sed "s/self\.out_rate =.*/self.out_rate = out_rate/g" $python_file > $tmp_file && mv $tmp_file $python_file
+    sed "s/self\.duration =.*/self.duration = duration/g" $python_file > $tmp_file && mv $tmp_file $python_file
 }
 
 pushd sdr/decoders

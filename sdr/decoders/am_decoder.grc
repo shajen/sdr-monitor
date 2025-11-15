@@ -28,11 +28,23 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [120, 52.0]
+    coordinate: [120, 56.0]
     rotation: 0
     state: enabled
 
 blocks:
+- name: duration
+  id: variable
+  parameters:
+    comment: ''
+    value: '60'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [600, 56.0]
+    rotation: 0
+    state: enabled
 - name: out_rate
   id: variable
   parameters:
@@ -42,7 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [488, 52.0]
+    coordinate: [488, 56.0]
     rotation: 0
     state: enabled
 - name: sample_rate
@@ -54,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [336, 52.0]
+    coordinate: [344, 56.0]
     rotation: 0
     state: true
 - name: analog_agc_xx_0
@@ -74,7 +86,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [704, 300.0]
+    coordinate: [944, 296.0]
     rotation: 0
     state: true
 - name: analog_am_demod_cf_0
@@ -93,7 +105,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1072, 300.0]
+    coordinate: [1312, 296.0]
     rotation: 0
     state: true
 - name: analog_pll_carriertracking_cc_0
@@ -111,7 +123,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 308.0]
+    coordinate: [1112, 304.0]
     rotation: 0
     state: true
 - name: blocks_add_const_vxx_0
@@ -129,7 +141,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 324.0]
+    coordinate: [464, 320.0]
     rotation: 0
     state: true
 - name: blocks_file_source_0
@@ -151,9 +163,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 292.0]
+    coordinate: [64, 288.0]
     rotation: 0
     state: true
+- name: blocks_head_0
+  id: blocks_head
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: int(sample_rate * duration * 2)
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [256, 320.0]
+    rotation: 0
+    state: enabled
 - name: blocks_interleaved_char_to_complex_0
   id: blocks_interleaved_char_to_complex
   parameters:
@@ -168,7 +198,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 316.0]
+    coordinate: [608, 312.0]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_0
@@ -186,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1560, 324.0]
+    coordinate: [1800, 320.0]
     rotation: 0
     state: true
 - name: blocks_null_sink_0
@@ -203,7 +233,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1736, 328.0]
+    coordinate: [1992, 328.0]
     rotation: 0
     state: true
 - name: low_pass_filter_0
@@ -227,7 +257,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 276.0]
+    coordinate: [776, 268.0]
     rotation: 0
     state: true
 - name: pfb_arb_resampler_xxx_0
@@ -248,7 +278,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1288, 300.0]
+    coordinate: [1528, 296.0]
     rotation: 0
     state: enabled
 
@@ -257,7 +287,8 @@ connections:
 - [analog_am_demod_cf_0, '0', pfb_arb_resampler_xxx_0, '0']
 - [analog_pll_carriertracking_cc_0, '0', analog_am_demod_cf_0, '0']
 - [blocks_add_const_vxx_0, '0', blocks_interleaved_char_to_complex_0, '0']
-- [blocks_file_source_0, '0', blocks_add_const_vxx_0, '0']
+- [blocks_file_source_0, '0', blocks_head_0, '0']
+- [blocks_head_0, '0', blocks_add_const_vxx_0, '0']
 - [blocks_interleaved_char_to_complex_0, '0', low_pass_filter_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_null_sink_0, '0']
 - [low_pass_filter_0, '0', analog_agc_xx_0, '0']
@@ -265,3 +296,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.10.9.2

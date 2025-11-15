@@ -1,5 +1,6 @@
 from gnuradio import blocks
 import astropy.nddata
+import datetime
 import io
 import math
 import numpy as np
@@ -82,15 +83,15 @@ def make_spectrogram(data, sample_rate):
     return out
 
 
-def decode_audio(in_file, out_file, modulation, sample_rate, out_rate=32000):
+def decode_audio(in_file, out_file, modulation, sample_rate, out_rate=32000, duration=datetime.timedelta(seconds=3600)):
     out_rate = min(sample_rate, out_rate)
     if modulation == "FM":
         if 75000 <= sample_rate:
-            decoder = sdr.decoders.wfm_decoder.wfm_decoder(in_file, sample_rate, out_rate)
+            decoder = sdr.decoders.wfm_decoder.wfm_decoder(in_file, sample_rate, out_rate, duration.total_seconds())
         else:
-            decoder = sdr.decoders.fm_decoder.fm_decoder(in_file, sample_rate, out_rate)
+            decoder = sdr.decoders.fm_decoder.fm_decoder(in_file, sample_rate, out_rate, duration.total_seconds())
     elif modulation == "AM":
-        decoder = sdr.decoders.am_decoder.am_decoder(in_file, sample_rate, out_rate)
+        decoder = sdr.decoders.am_decoder.am_decoder(in_file, sample_rate, out_rate, duration.total_seconds())
     else:
         return []
 

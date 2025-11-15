@@ -28,11 +28,23 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [120, 52.0]
+    coordinate: [120, 56.0]
     rotation: 0
     state: enabled
 
 blocks:
+- name: duration
+  id: variable
+  parameters:
+    comment: ''
+    value: '60'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [584, 56.0]
+    rotation: 0
+    state: enabled
 - name: out_rate
   id: variable
   parameters:
@@ -42,7 +54,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 52.0]
+    coordinate: [472, 56.0]
     rotation: 0
     state: enabled
 - name: sample_rate
@@ -54,7 +66,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [336, 52.0]
+    coordinate: [344, 56.0]
     rotation: 0
     state: true
 - name: analog_agc_xx_0
@@ -74,7 +86,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 268.0]
+    coordinate: [1112, 272.0]
     rotation: 0
     state: true
 - name: analog_fm_demod_cf_1
@@ -96,7 +108,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [944, 244.0]
+    coordinate: [1312, 244.0]
     rotation: 0
     state: true
 - name: blocks_add_const_vxx_0
@@ -114,7 +126,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [288, 292.0]
+    coordinate: [528, 296.0]
     rotation: 0
     state: true
 - name: blocks_file_source_0
@@ -136,9 +148,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [128, 260.0]
+    coordinate: [128, 264.0]
     rotation: 0
     state: true
+- name: blocks_head_0
+  id: blocks_head
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: int(sample_rate * duration * 2)
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [320, 296.0]
+    rotation: 0
+    state: enabled
 - name: blocks_interleaved_char_to_complex_0
   id: blocks_interleaved_char_to_complex
   parameters:
@@ -153,7 +183,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 284.0]
+    coordinate: [704, 288.0]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_0
@@ -171,7 +201,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1416, 292.0]
+    coordinate: [1808, 296.0]
     rotation: 0
     state: true
 - name: blocks_null_sink_0
@@ -188,7 +218,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1608, 296.0]
+    coordinate: [2000, 304.0]
     rotation: 0
     state: true
 - name: low_pass_filter_0
@@ -212,7 +242,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 244.0]
+    coordinate: [896, 244.0]
     rotation: 0
     state: true
 - name: pfb_arb_resampler_xxx_0
@@ -233,7 +263,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1136, 268.0]
+    coordinate: [1528, 272.0]
     rotation: 0
     state: enabled
 
@@ -241,7 +271,8 @@ connections:
 - [analog_agc_xx_0, '0', analog_fm_demod_cf_1, '0']
 - [analog_fm_demod_cf_1, '0', pfb_arb_resampler_xxx_0, '0']
 - [blocks_add_const_vxx_0, '0', blocks_interleaved_char_to_complex_0, '0']
-- [blocks_file_source_0, '0', blocks_add_const_vxx_0, '0']
+- [blocks_file_source_0, '0', blocks_head_0, '0']
+- [blocks_head_0, '0', blocks_add_const_vxx_0, '0']
 - [blocks_interleaved_char_to_complex_0, '0', low_pass_filter_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_null_sink_0, '0']
 - [low_pass_filter_0, '0', analog_agc_xx_0, '0']
@@ -249,3 +280,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.10.9.2
