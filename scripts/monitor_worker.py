@@ -21,9 +21,9 @@ def run(*args):
         threads.append(Cleaner())
     if args.classifier:
         try:
-            from sdr.utils.classifier import Classifier
+            from sdr.utils.classifier_controller import ClassifierController
 
-            threads.append(Classifier())
+            threads.append(ClassifierController())
         except Exception as e:
             logging.getLogger("Worker").warning("exception: %s" % e)
 
