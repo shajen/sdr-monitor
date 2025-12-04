@@ -19,7 +19,7 @@ function connect(url) {
             $("#loading_section").hide();
             if (!(scanner_id in scanners)) {
                 scanners[scanner_id] = jQuery.parseJSON(new TextDecoder().decode(message));
-                addScanner(scanners[scanner_id]);
+                addScanner(scanners[scanner_id], scanner_id);
             }
         }
         else if (command == "config" && values[3] == "success") {
@@ -67,7 +67,7 @@ function parseValue(value, type) {
     }
 }
 
-function addScanner(scanner) {
+function addScanner(scanner, scanner_id) {
     let d = document.createElement("div");
     $(d).addClass('form-check');
 
@@ -81,7 +81,7 @@ function addScanner(scanner) {
 
     let l = document.createElement("label");
     $(l).addClass("form-check-label");
-    $(l).append("scanner #" + ($("#scanner_selector").children().length + 1));
+    $(l).append("scanner #" + scanner_id);
     $(l).click(function () {
         $(i).prop('checked', true);
         selectScanner(scanner);
