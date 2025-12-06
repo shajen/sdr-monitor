@@ -168,7 +168,7 @@ def transmission_data(request, transmission_id):
         return redirect_file_response(filename, t.data_file.url)
     elif t.group.modulation in ["FM", "AM"]:
         filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
-        sdr.signals.decode_audio(t.data_file.path, filename, t.group.modulation, sample_rate)
+        sdr.signals.decode_audio(t.data_file.path, filename, t.group.modulation, sample_rate, t.duration())
         return file_response(filename)
 
 
