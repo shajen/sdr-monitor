@@ -30,7 +30,7 @@ class SpectrogramReader:
         return date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
     def check_spectrogram_integrity(self, s):
-        y_size = np.frombuffer(s.labels, dtype=np.uint64).size
+        y_size = np.fromfile(s.labels_file.path, dtype=np.uint64).size
         x_size = (s.end_frequency - s.begin_frequency) // s.step_frequency + 1
         data = np.memmap(s.data_file.path, dtype=np.uint8, mode="r", shape=(y_size, x_size))
         self.__logger.info("total data shape: %s, size: %s" % (str(data.shape), naturalsize(data.size)))
@@ -53,6 +53,8 @@ class SpectrogramReader:
             f = (begin_frequency + end_frequency) // 2
             dir = "device_%d/spectrogram" % device.id
             (filename, filename_full) = sdr.utils.file.get_filename(dir, begin_model_date, "%s_%d_%d.bin" % (begin_model_date.strftime("%H_%M_%S"), f, step_frequency), True)
+            (labels_filename, filename_full) = sdr.utils.file.get_filename(dir, begin_model_date, "%s_%d_%d_labels.bin" % (begin_model_date.strftime("%H_%M_%S"), f, step_frequency), True)
+            
             s = Spectrogram.objects.create(
                 device=device,
                 begin_frequency=begin_frequency,
@@ -63,12 +65,18 @@ class SpectrogramReader:
                 begin_real_date=dt,
                 end_real_date=dt,
                 data_file=filename,
+                labels_file=labels_filename,
+                sample_nos=0,
                 source=source,
             )
 
         with open(s.data_file.path, "ab") as file:
             file.write(data)
-        s.labels += np.array([int(dt.timestamp() * 1000)]).astype(np.uint64).tobytes()
+        #TODO Large array creating issue with database as it too much overhead in fetching and appending binary data. Find a way around
+        with open(s.labels_file.path, "ab") as labels_file:
+            labels_file.write(np.array([int(dt.timestamp() * 1000)]).astype(np.uint64).tobytes())
+        s.sample_nos  += 1 
+        
         s.end_real_date = dt
         s.save()
         # self.check_spectrogram_integrity(s)

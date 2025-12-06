@@ -30,8 +30,9 @@ class Spectrogram(models.Model):
     end_model_date = models.DateTimeField("End (model)", db_index=True)
     begin_real_date = models.DateTimeField("Begin (data)", db_index=True)
     end_real_date = models.DateTimeField("End (data)", db_index=True)
-    labels = models.BinaryField("Labels")
+    sample_nos = models.PositiveBigIntegerField("Labels", db_index=True)
     data_file = models.FileField("Data file", upload_to="spectrogram/%Y-%m-%d/")
+    labels_file = models.FileField("Labels data file", upload_to="spectrogram/%Y-%m-%d/")
     device = models.ForeignKey(Device, on_delete=models.CASCADE, default=get_default_device_id)
     source = models.CharField("Source", max_length=255)
 
