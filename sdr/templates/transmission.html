@@ -9,26 +9,25 @@ Transmission - {{ transmission.frequency | frequency:2 }} - {{transmission.bandw
 {% block section_content %}
 <div class="row mt-2">
     <div class="col-12">
-        <h3>Transmission date: {{ transmission.begin_date }} - {{ transmission.end_date }} ({{ transmission.duration }})
-        </h3>
+        <h3>Transmission date: {{ transmission.begin_date }} - {{ transmission.end_date }} ({{ transmission.duration }})</h3>
         <h3>Transmission name: {{ transmission.group.name }}</h3>
         <h3>Transmission frequency: {{ transmission.frequency | frequency:2 }} </h3>
         <h3>Transmission sample rate: {{ transmission.sample_rate | frequency}} </h3>
         <h3>Transmission modulation: {{ transmission.group.modulation }}</h3>
         <h3>Device: {{ transmission.device.name }} </h3>
         <h3>Raw file size: {{ transmission.data_file.size | natural_size }}</h3>
-        <h3>Raw data type: {{ transmission.data_type }}</h3>
     </div>
     <div class="col-12">
-        <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw" class="btn btn-primary" download>
-            raw data (cu8)</a>
-        <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_complex64" class="btn btn-primary" download>
-            raw data (cf32)</a>
-        <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_wav" class="btn btn-primary" download>
-            raw data (wav)</a>
-        <a href="{% url 'sdr_transmission_data' transmission.id %}?format=spectrogram" class="btn btn-primary" download>
-            spectrogram</a>
-        <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>decoded file</a>
+        <h3>Raw IQ:
+            <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw" class="btn btn-primary" download>cu8</a>
+            <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_complex64" class="btn btn-primary" download>cf32</a>
+            <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_wav" class="btn btn-primary" download>wav</a>
+        </h3>
+
+        <h3>Decoded:
+            <a href="{% url 'sdr_transmission_data' transmission.id %}?format=spectrogram" class="btn btn-primary" download>spectrogram</a>
+            <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>wav</a>
+        </h3>
     </div>
 </div>
 <div class="row mt-2">
