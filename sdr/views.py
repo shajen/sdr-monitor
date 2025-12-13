@@ -1,6 +1,5 @@
 from common.helpers import *
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required, permission_required
@@ -231,7 +230,7 @@ def config(request):
 
 @staff_member_required()
 def logs(request):
-    return common.utils.files.get_directory_as_archive_response(settings.LOG_DIR, "logs")
+    return common.utils.files.get_directory_as_archive_response(monitor.settings.LOG_DIR, "logs")
 
 
 class SatellitesForm(forms.Form):
