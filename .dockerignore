@@ -9,6 +9,5 @@ cache
 data
 Dockerfile
 patches
-sdr/decoders/*.py
 static/libs
 tools

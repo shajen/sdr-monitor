@@ -33,7 +33,6 @@ COPY . .
 COPY /entrypoint/* /entrypoint/
 RUN django-admin compilemessages && \
     mkdir -p /app/data && \
-    ./gen_decoder.sh && \
     ./manage.py runscript download_libs --script-args="-c libs.json -o static/libs/" && \
     chown -R ubuntu:ubuntu /app/
 ARG VERSION=""
