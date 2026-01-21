@@ -42,7 +42,7 @@
             </a>
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li class="dropdown"><a href="#"><span>Configuration</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                    <li class="dropdown"><a href="#"><span>{% trans "CONFIGURATION" %}</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li><a href="{% url 'sdr_settings' %}">Monitor settings</a></li>
                             <li><a href="{% url 'sdr_config' %}">Sdr settings</a></li>
@@ -63,6 +63,8 @@
                             <li><a href="{% url 'admin:index' %}">{% trans "ADMIN PANEL" %}</a></li>
                             {% endif %}
                             <li><a href="{% url 'sdr_logs' %}">{% trans "DOWNLOAD LOGS" %}</a></li>
+                            <li><a href="{% url 'sdr_data' %}">{% trans "DOWNLOAD DATA" %}</a></li>
+                            <li><a href="{% url 'sdr_all' %}">{% trans "DOWNLOAD ALL" %}</a></li>
                         </ul>
                     </li>
                     {% if user.is_authenticated %}

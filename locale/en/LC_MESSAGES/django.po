@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-05 22:24+0200\n"
+"POT-Creation-Date: 2026-01-21 20:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,7 +64,7 @@ msgstr "Sign out"
 #: common/templates/account/login.html:5 common/templates/account/login.html:15
 #: common/templates/account/password_reset_complete.html:9
 #: common/templates/account/password_reset_done.html:9
-#: templates/generic/main.html:61
+#: templates/generic/main.html:73
 msgid "SIGN IN"
 msgstr "Sign in"
 
@@ -123,10 +123,6 @@ msgstr "No"
 msgid "USERNAME OR EMAIL"
 msgstr "Username or email"
 
-#: sdr/templates/config.html:6
-msgid "CONFIGURATION"
-msgstr "Configuration"
-
 #: sdr/templates/groups.html:5
 msgid "GROUPS"
 msgstr "Groups"
@@ -139,31 +135,43 @@ msgstr "Spectrograms"
 msgid "TRANSMISSIONS"
 msgstr "Transmissions"
 
-#: templates/generic/main.html:32 templates/generic/main.html:42
+#: templates/generic/main.html:31 templates/generic/main.html:41
 msgid "APP_NAME"
 msgstr "Sdr Monitor"
 
-#: templates/generic/main.html:50
+#: templates/generic/main.html:45
+msgid "CONFIGURATION"
+msgstr "Configuration"
+
+#: templates/generic/main.html:60
 msgid "EXTRA"
 msgstr "Debug"
 
-#: templates/generic/main.html:53
+#: templates/generic/main.html:63
 msgid "ADMIN PANEL"
 msgstr "Admin panel"
 
-#: templates/generic/main.html:55
+#: templates/generic/main.html:65
 msgid "DOWNLOAD LOGS"
 msgstr "Download logs"
 
-#: templates/generic/main.html:59
+#: templates/generic/main.html:66
+msgid "DOWNLOAD DATA"
+msgstr "Download data"
+
+#: templates/generic/main.html:67
+msgid "DOWNLOAD ALL"
+msgstr "Download all"
+
+#: templates/generic/main.html:71
 msgid "ACCOUNT"
 msgstr "Account"
 
-#: templates/generic/main.html:79
+#: templates/generic/main.html:91
 msgid "ALL RIGHTS RESERVED"
 msgstr "All rights reserved."
 
-#: templates/generic/main.html:80
+#: templates/generic/main.html:92
 msgid "DESIGNED BY"
 msgstr "Designed by"
 
