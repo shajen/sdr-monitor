@@ -18,13 +18,13 @@ Transmission - {{ transmission.frequency | frequency:2 }} - {{transmission.bandw
         <h3>Raw file size: {{ transmission.data_file.size | natural_size }}</h3>
     </div>
     <div class="col-12">
-        <h3>Raw IQ:
+        <h3>Download raw IQ:
             <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw" class="btn btn-primary" download>cu8</a>
-            <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_complex64" class="btn btn-primary" download>cf32</a>
+            <a href="{% url 'sdr_transmission_data' transmission.id %}?format=gqrx" class="btn btn-primary" download>gqrx</a>
             <a href="{% url 'sdr_transmission_data' transmission.id %}?format=raw_wav" class="btn btn-primary" download>wav</a>
         </h3>
 
-        <h3>Decoded:
+        <h3>Download decoded:
             <a href="{% url 'sdr_transmission_data' transmission.id %}?format=spectrogram" class="btn btn-primary" download>spectrogram</a>
             <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>wav</a>
         </h3>

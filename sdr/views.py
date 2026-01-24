@@ -155,15 +155,15 @@ def transmission_data(request, transmission_id):
         drawer = sdr.drawer.Drawer(frequency_labels_count=8, draw_time=False, draw_power=True, text_size=16, text_stroke=2, min_width=1024)
         drawer.draw_spectrogram(data, filename, data.shape[1], data.shape[0], t.begin_frequency, t.end_frequency, list(range(data.shape[0])))
         return file_response(filename)
-    elif format == "raw_complex64":
+    elif format == "gqrx":
         filename = get_download_raw_iq_filename("transmission", t.id, "fc", "raw", t.middle_frequency(), sample_rate, t.begin_date)
         return streaming_file_response(filename, convert_uint8_to_float32_stream(t.data_file.path), t.data_file.size * 4)
     elif format == "raw_wav":
-        filename = get_download_raw_iq_filename("transmission", t.id, "fc", "wav", t.middle_frequency(), sample_rate, t.begin_date)
+        filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
         header = wav_header_from_cu8_pcm16(t.data_file.path, sample_rate)
         return streaming_file_response(filename, wav_stream_from_cu8_pcm16(t.data_file.path, sample_rate), len(header) + t.data_file.size * 2)
     elif format == "raw":
-        filename = get_download_raw_iq_filename("transmission", t.id, "cu8", "raw", t.middle_frequency(), sample_rate, t.begin_date)
+        filename = get_download_filename("transmission", t.id, "bin", t.begin_date)
         return redirect_file_response(filename, t.data_file.url)
     elif t.group.modulation in ["FM", "AM"]:
         filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
