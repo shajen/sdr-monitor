@@ -2,7 +2,7 @@ FROM ubuntu:24.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential git python3 python3-dev python3-pip python3-numpy libpq5 tzdata gettext libjpeg8-dev libopenexr-dev libpng-dev libfreetype6-dev && \
+    apt-get install -y --no-install-recommends build-essential pkg-config git python3 python3-dev python3-pip python3-numpy libpq5 tzdata gettext libmysqlclient-dev libjpeg8-dev libopenexr-dev libpng-dev libfreetype6-dev && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/
@@ -21,7 +21,7 @@ RUN MAKEFLAGS="-j$(nproc)" pip install --break-system-packages --no-cache-dir -r
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata ca-certificates gettext libjpeg8 libopenexr-3-1-30 libpng16-16t64 libfreetype6 && \
+    apt-get install -y --no-install-recommends python3 python3-numpy gnuradio libpq5 tzdata ca-certificates gettext libmysqlclient21 libjpeg8 libopenexr-3-1-30 libpng16-16t64 libfreetype6 && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/

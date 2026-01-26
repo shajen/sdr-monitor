@@ -12,6 +12,7 @@ django-templates-macros
 gunicorn
 humanize
 matplotlib
+mysqlclient
 numpy
 OpenImageIO
 paho-mqtt
