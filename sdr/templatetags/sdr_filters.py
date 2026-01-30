@@ -1,4 +1,5 @@
 from django import template
+import datetime
 import humanize
 
 register = template.Library()
@@ -35,6 +36,11 @@ def natural_size(value):
 
 def big_number(value):
     return humanize.intcomma(value).replace(",", " ")
+
+
+@register.filter
+def duration(value):
+    return datetime.timedelta(seconds=int(value.total_seconds()))
 
 
 register.filter("frequency", frequency)

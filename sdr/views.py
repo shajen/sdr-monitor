@@ -109,24 +109,23 @@ def transmissions(request):
         items = Transmission.objects
     else:
         items = Transmission.objects.exclude(source="gain tester")
-    items = (
-        items.select_related("device")
-        .select_related("group")
-        .annotate(
-            device_name=F("device__name"),
-            group_name=F("group__name"),
-            modulation=F("group__modulation"),
-            datetime=F("begin_date"),
-            duration=TruncSecond("end_date") - TruncSecond("begin_date"),
-            frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
-            class_name=F("audio_class__name"),
-            class_subname=F("audio_class__subname"),
-        )
+    items = Transmission.objects
+    options_lists = common.utils.filters.get_options_lists(request, items, ["device__name", "group__modulation", "group__name", "audio_class__name"])
+    items = items.annotate(
+        duration=F("end_date") - F("begin_date"),
+        frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
     )
-    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name", "modulation", "group_name", "class_name"])
     items = common.utils.filters.filter(request, items)
-    items = common.utils.filters.order_by(request, items, ["-datetime", "frequency"])
+    items = common.utils.filters.order_by(request, items, ["-begin_date"])
     page_size = int(request.GET.get("page_size", "100"))
+    items = items.select_related("device", "group", "audio_class").only(
+        "begin_date",
+        "audio_class__name",
+        "device__name",
+        "group__data_type",
+        "group__modulation",
+        "group__name",
+    )
     items = Paginator(items, page_size).get_page(request.GET.get("page"))
     return render(request, "transmissions.html", dict({"items": items}, **options_lists))
 
