@@ -8,23 +8,16 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
     {% include "generic/meta/fonts.html" %}
+
     {% include "generic/meta/css.html" %}
-    <link href="{% static 'libs/jquery.datetimepicker.css' %}" rel="stylesheet">
     <link href="{% static 'css/logis.css' %}" rel="stylesheet">
     <link href="{% static 'css/logis_custom.css' %}" rel="stylesheet">
     <link href="{% static 'css/dragscroll.css' %}" rel="stylesheet">
 
     {% include "generic/meta/js.html" %}
-    <script src="{% static 'libs/jquery.min.js' %}"></script>
-    <script src="{% static 'libs/dragscroll.min.js' %}"></script>
-    <script src="{% static 'libs/jquery.datetimepicker.full.min.js' %}"></script>
-    <script src="{% static 'libs/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'libs/bootstrap-timepicker.min.js' %}"></script>
-    <script src="{% static 'libs/url.min.js' %}"></script>
-    <script src="{% static 'libs/mqtt.min.js' %}"></script>
-
     <script src="{% static 'js/collapse.js' %}"></script>
     <script src="{% static 'js/field_filter.js' %}"></script>
+
     {% block main_scripts %}
     {% endblock %}
 
