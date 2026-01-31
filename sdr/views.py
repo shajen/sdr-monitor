@@ -229,7 +229,7 @@ def config(request):
 
 @staff_member_required()
 def logs(request):
-    return common.utils.files.get_directory_as_archive_response([(monitor.settings.LOG_DIR, "logs")], "logs")
+    return common.utils.files.get_directory_as_archive_response([(monitor.settings.LOG_DIR, "log")], "log")
 
 
 @staff_member_required()
@@ -239,7 +239,7 @@ def data(request):
 
 @staff_member_required()
 def all(request):
-    return common.utils.files.get_directory_as_archive_response([(monitor.settings.LOG_DIR, "logs"), os.path.join(monitor.settings.BASE_DIR, "data")], "all")
+    return common.utils.files.get_directory_as_archive_response([(monitor.settings.LOG_DIR, "log"), os.path.join(monitor.settings.BASE_DIR, "data")], "all")
 
 
 class SatellitesForm(forms.Form):
