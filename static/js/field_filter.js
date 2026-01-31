@@ -24,10 +24,10 @@ function updateFieldsFilter() {
     }
     $("input[id^=input_]").each(function () {
         updateField($(this).attr('field-id'));
-        if (this.id.includes('input_datetime_')) {
+        if (this.id.includes('_datetime_')) {
             $(this).datetimepicker({ format: 'Y-m-d H:i', dayOfWeekStart: 1 });
         }
-        else if (this.id.includes('input_date_')) {
+        else if (this.id.includes('_date_')) {
             $(this).datetimepicker({ format: 'Y-m-d', dayOfWeekStart: 1, timepicker: false });
         }
     });
