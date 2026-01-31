@@ -12,8 +12,8 @@
                 <tr>
                     <form action="{% url 'sdr_transmissions' %}" method="get">
                         {% include "generic/headers/filter_string.html" with field="device__name" options=device__name_options %}
-                        {% include "generic/headers/filter_number.html" with field="begin_date" %}
-                        {% include "generic/headers/filter_number.html" with field="duration" %}
+                        {% include "generic/headers/filter_datetime.html" with field="begin_date" %}
+                        {% include "generic/headers/filter_duration.html" with field="duration" %}
                         {% include "generic/headers/filter_number.html" with field="frequency" %}
                         {% include "generic/headers/filter_string.html" with field="group__modulation" options=group__modulation_options %}
                         {% include "generic/headers/filter_string.html" with field="group__name" options=group__name_options %}

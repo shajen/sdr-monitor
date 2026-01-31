@@ -24,11 +24,22 @@ function updateFieldsFilter() {
     }
     $("input[id^=input_]").each(function () {
         updateField($(this).attr('field-id'));
-        if (this.id.includes('_datetime_')) {
+        const inputType = $(this).attr('input-type');
+        if (inputType == "datetime") {
             $(this).datetimepicker({ format: 'Y-m-d H:i', dayOfWeekStart: 1 });
         }
-        else if (this.id.includes('_date_')) {
+        else if (inputType == "date") {
             $(this).datetimepicker({ format: 'Y-m-d', dayOfWeekStart: 1, timepicker: false });
+        }
+        else if (inputType == "duration") {
+            $(this).timepicker({
+                showSeconds: true,
+                showMeridian: false,
+                secondStep: 1,
+                minuteStep: 1,
+                defaultTime: false,
+                icons: { up: 'bi bi-chevron-compact-up', down: 'bi bi-chevron-compact-down' }
+            });
         }
     });
     $("input[id^=input_][id*='_select_']").change(function () {
