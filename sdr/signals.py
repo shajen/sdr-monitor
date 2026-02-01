@@ -1,14 +1,11 @@
-from gnuradio import blocks
 import astropy.nddata
 import datetime
 import io
 import math
 import numpy as np
 import os
-import sdr.decoders.am_decoder
-import sdr.decoders.fm_decoder
-import sdr.decoders.wfm_decoder
 import struct
+import subprocess
 import wave
 
 
@@ -87,20 +84,15 @@ def decode_audio(in_file, out_file, modulation, sample_rate, out_rate=32000, dur
     out_rate = min(sample_rate, out_rate)
     if modulation == "FM":
         if 75000 <= sample_rate:
-            decoder = sdr.decoders.wfm_decoder.wfm_decoder
+            decoder = "sdr/decoders/nbfm.lua"
         else:
-            decoder = sdr.decoders.fm_decoder.fm_decoder
+            decoder = "sdr/decoders/wbfm.lua"
     elif modulation == "AM":
-        decoder = sdr.decoders.am_decoder.am_decoder
+        decoder = "sdr/decoders/am.lua"
     else:
-        return []
+        return
 
     if out_file:
-        wav_block = blocks.wavfile_sink(out_file, 1, out_rate, blocks.FORMAT_WAV, blocks.FORMAT_PCM_16, False)
-        gr = decoder(input=in_file, sample_rate=sample_rate, audio_rate=out_rate, duration=duration.total_seconds(), output=wav_block)
-        gr.run()
+        subprocess.run(["luaradio", decoder, in_file, str(sample_rate), str(out_rate), out_file], stdout=subprocess.PIPE)
     else:
-        vector_block = blocks.vector_sink_f(1, 1024)
-        gr = decoder(input=in_file, sample_rate=sample_rate, audio_rate=out_rate, duration=duration.total_seconds(), output=vector_block)
-        gr.run()
-        return vector_block.data()
+        return subprocess.run(["luaradio", decoder, in_file, str(sample_rate), str(out_rate)], stdout=subprocess.PIPE).stdout

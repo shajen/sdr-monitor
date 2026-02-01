@@ -1,10 +1,12 @@
 from django.utils.timezone import localtime
 from sdr.models import *
-from sdr.signals import *
 import common.utils.classifier
 import csv
+import datetime
 import io
 import logging
+import numpy as np
+import sdr.signals
 
 
 # https://www.tensorflow.org/lite/inference_with_metadata/task_library/audio_classifier
@@ -31,7 +33,7 @@ class SoundClassifier:
         try:
             sample_rate = t.end_frequency - t.begin_frequency
             data = sdr.signals.decode_audio(t.data_file.path, None, t.group.modulation, sample_rate, out_rate=16000, duration=datetime.timedelta(seconds=10))
-            data = np.array(data).astype(np.float32)
+            data = np.frombuffer(data, dtype=np.float32)
             (sound_id, sound_label, accuracy) = self.__classifier.predict_class(data)
             self.__logger.info(
                 "id: %d, frequency: %d Hz, date: %s, duration: %s, class: %s, accuracy: %.2f"
