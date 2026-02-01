@@ -1,6 +1,7 @@
 import astropy.nddata
 import datetime
 import io
+import json
 import math
 import numpy as np
 import os
@@ -96,3 +97,17 @@ def decode_audio(in_file, out_file, modulation, sample_rate, out_rate=32000, dur
         subprocess.run(["luaradio", decoder, in_file, str(sample_rate), str(out_rate), out_file], stdout=subprocess.PIPE)
     else:
         return subprocess.run(["luaradio", decoder, in_file, str(sample_rate), str(out_rate)], stdout=subprocess.PIPE).stdout
+
+
+def decode_txt(in_file, modulation, sample_rate):
+    if modulation == "AFSK1200":
+        try:
+            decoder = "sdr/decoders/aprs.lua"
+            result = subprocess.run(["luaradio", decoder, in_file, str(sample_rate)], stdout=subprocess.PIPE)
+            messages = result.stdout.decode("utf-8")
+            messages = [json.loads(m) for m in messages.strip().split("\n")]
+            return [" ".join([a["callsign"] for a in m["addresses"]] + [m["payload"]]) for m in messages]
+        except:
+            return []
+    else:
+        return []

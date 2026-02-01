@@ -45,7 +45,6 @@ class SoundClassifier:
             return "Unknown"
 
     def update(self, t):
-        self.__logger.info("id: %d, frequency: %d Hz, date: %s, duration: %s" % (t.id, t.middle_frequency(), localtime(t.end_date), t.duration()))
         sound_label = self.get_sound_label(t)
         name = self.__get_audio_class_name(sound_label)
         t.audio_class = AudioClass.objects.get_or_create(name=name, subname=sound_label)[0]

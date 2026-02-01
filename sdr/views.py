@@ -138,7 +138,8 @@ def transmission(request, transmission_id):
         sample_rate=F("end_frequency") - F("begin_frequency"),
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
     ).get(id=transmission_id)
-    return render(request, "transmission.html", {"transmission": transmission})
+    messages = sdr.signals.decode_txt(transmission.data_file.path, transmission.group.modulation, transmission.end_frequency - transmission.begin_frequency)
+    return render(request, "transmission.html", {"transmission": transmission, "messages_": messages})
 
 
 @login_required()
