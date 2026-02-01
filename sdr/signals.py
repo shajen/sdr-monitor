@@ -99,15 +99,7 @@ def pipeline(commands):
 
 
 def decode_audio(in_file, format, modulation, sample_rate=32000, out_rate=32000, duration=datetime.timedelta(hours=2)):
-    if modulation == "FM":
-        if 75000 <= sample_rate:
-            decoder = "sdr/decoders/wbfm.lua"
-        else:
-            decoder = "sdr/decoders/nbfm.lua"
-    elif modulation == "AM":
-        decoder = "sdr/decoders/am.lua"
-    else:
-        return
+    decoder = "sdr/decoders/%s.lua" % modulation.lower()
 
     if format in ["mp3", "wav"]:
         return pipeline(
@@ -127,11 +119,11 @@ def decode_audio(in_file, format, modulation, sample_rate=32000, out_rate=32000,
 
 
 def decode_txt(in_file, format, modulation, sample_rate, duration=datetime.timedelta(hours=2)):
-    if modulation == "AFSK 1200":
-        return pipeline(
-            [
-                truncate(in_file, sample_rate, duration),
-                ["sdr/decoders/afsk.lua", "-r", str(sample_rate), "-b", "1200", "-f", format],
-                ["jq", "-r", '[.addresses[].callsign, .payload] | join(" | ")'],
-            ],
-        )
+    modulation, baud_rate = modulation.split(" ")
+    return pipeline(
+        [
+            truncate(in_file, sample_rate, duration),
+            ["sdr/decoders/%s.lua" % (modulation.lower()), "-r", str(sample_rate), "-b", baud_rate, "-f", format],
+            ["jq", "-r", '[.addresses[].callsign, .payload] | join(" | ")'],
+        ],
+    )

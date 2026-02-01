@@ -28,11 +28,11 @@ class TransmissionReader:
         device = self.get_device(device)
         frequency = (begin_frequency + end_frequency) // 2
         try:
-            if name and modulation:
-                group, created = Group.objects.get_or_create(name=name, begin_frequency=frequency, end_frequency=frequency, modulation=modulation)
+            if name:
+                group, created = Group.objects.get_or_create(name=name, begin_frequency=frequency, end_frequency=frequency)
                 group_id = group.id
                 if created:
-                    self.__logger.info(f"created group, name: {name}, frequency: {frequency}, modulation: {modulation}")
+                    self.__logger.info(f"created group, name: {name}, frequency: {frequency}")
                     sdr.utils.group.update_groups()
             else:
                 group_id = (
@@ -51,8 +51,8 @@ class TransmissionReader:
                 end_date__gt=dt - timezone.timedelta(seconds=1),
                 end_date__lt=dt,
                 sample_size=sample_size,
-                data_type=sample_type,
                 group_id=group_id,
+                modulation=modulation or get_default_modulation(),
                 source=source,
             )
             t.end_date = dt
@@ -67,8 +67,8 @@ class TransmissionReader:
                 end_date=dt,
                 sample_size=sample_size,
                 data_file=filename,
-                data_type=sample_type,
                 group_id=group_id,
+                modulation=modulation or get_default_modulation(),
                 source=source,
             )
         self.__logger.debug("new size: %d = %d x %d, size: %s" % (len(samples), len(samples) / sample_size, sample_size, naturalsize(sample_size)))

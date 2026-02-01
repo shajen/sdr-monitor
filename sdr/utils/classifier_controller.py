@@ -17,26 +17,29 @@ class ClassifierController(threading.Thread):
         self.__sound_classifier = sdr.utils.sound_classifier.SoundClassifier()
 
     def run(self):
-        default_audio_class_id = get_default_audio_class_id()
+        default_modulation = get_default_modulation()
+        default_media_class = get_default_media_class()
         self.__logger.debug("start")
         while self.__is_working:
             self.__logger.debug("processing")
             cut_dt = timezone.now() - timezone.timedelta(seconds=10)
-            for t in Transmission.objects.filter(end_date__lt=cut_dt, audio_class_id=default_audio_class_id, group__data_type__in=["audio", "txt"]).order_by("begin_date").all():
+            for t in Transmission.objects.filter(end_date__lt=cut_dt, modulation=default_modulation, media_class=default_media_class).order_by("begin_date").all():
                 self.__logger.info("id: %d, frequency: %d Hz, date: %s, duration: %s" % (t.id, t.middle_frequency(), localtime(t.end_date), t.duration()))
-                if t.group.data_type == "audio":
+                if t.media_type == "audio":
                     self.__sound_classifier.update(t)
-                elif t.group.data_type == "txt":
+                elif t.media_type == "txt":
                     process = sdr.signals.decode_txt(
                         in_file=t.data_file.path,
-                        modulation=t.group.modulation,
+                        modulation=t.modulation,
                         sample_rate=t.end_frequency - t.begin_frequency,
                         format="json",
                         duration=datetime.timedelta(seconds=10),
                     )
-                    (name, subname) = ("Data", "Data") if process.stdout.read() else ("Noise", "Unknown")
-                    t.audio_class = AudioClass.objects.get_or_create(name=name, subname=subname)[0]
-                    self.__logger.info("id: %d, frequency: %d Hz, date: %s, duration: %s, class: %s" % (t.id, t.middle_frequency(), localtime(t.end_date), t.duration(), name))
+                    media_class = "Data" if process.stdout.read() else "Unknown"
+                    t.media_class = media_class
+                    self.__logger.info(
+                        "id: %d, frequency: %d Hz, date: %s, duration: %s, class: %s" % (t.id, t.middle_frequency(), localtime(t.end_date), t.duration(), media_class)
+                    )
                     t.save()
                 if not self.__is_working:
                     break

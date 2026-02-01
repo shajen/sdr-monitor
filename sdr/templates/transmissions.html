@@ -15,9 +15,9 @@
                         {% include "generic/headers/filter_datetime.html" with field="begin_date" %}
                         {% include "generic/headers/filter_duration.html" with field="duration" %}
                         {% include "generic/headers/filter_number.html" with field="frequency" %}
-                        {% include "generic/headers/filter_string.html" with field="group__modulation" options=group__modulation_options %}
+                        {% include "generic/headers/filter_string.html" with field="modulation" options=modulation_options %}
                         {% include "generic/headers/filter_string.html" with field="group__name" options=group__name_options %}
-                        {% include "generic/headers/filter_string.html" with field="audio_class__name" options=audio_class__name_options %}
+                        {% include "generic/headers/filter_string.html" with field="media_class" options=media_class_options %}
                         <th colspan="3">
                             <input type="hidden" id="input_order_by" value="{{ order_by }}" name="order_by">
                             <input type="submit" class="btn btn-success" value="Filter">
@@ -30,9 +30,9 @@
                     {% include "generic/headers/sort.html" with name="Date" field="begin_date" col="1" %}
                     {% include "generic/headers/sort.html" with name="Duration" field="duration" col="1" %}
                     {% include "generic/headers/sort.html" with name="Frequency" field="frequency" col="1" %}
-                    {% include "generic/headers/sort.html" with name="Modulation" field="group__modulation" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Modulation" field="modulation" col="1" %}
                     {% include "generic/headers/sort.html" with name="Group" field="group__name" col="1" %}
-                    {% include "generic/headers/sort.html" with name="Class" field="audio_class__name" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Class" field="media_class" col="1" %}
                     <th class="col-md-2">
                         Decoded file
                     </th>
@@ -51,12 +51,12 @@
                     </td>
                     <td class="py-1">{{ transmission.duration|duration }}</td>
                     <td class="py-1">{{ transmission.frequency|frequency:2 }}</td>
-                    <td class="py-1">{{ transmission.group.modulation }}</td>
+                    <td class="py-1">{{ transmission.modulation }}</td>
                     <td class="py-1">{{ transmission.group.name }}</td>
-                    <td class="py-1">{{ transmission.audio_class.name }}</td>
+                    <td class="py-1">{{ transmission.media_class }}</td>
                     <td class="py-1">
                         <div class="btn-group" role="group">
-                            {% if transmission.group.data_type == 'audio' %}
+                            {% if transmission.media_type == 'audio' %}
                             <audio controls preload="none">
                                 <source src="{% url 'sdr_transmission_data' transmission.id %}" type="audio/mpeg">
                             </audio>

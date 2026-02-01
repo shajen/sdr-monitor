@@ -1,17 +1,28 @@
 from django.db import models
 from django.utils.timezone import timedelta
 
+AUDIO_MODULATIONS = ["AM", "NBFM", "WBFM"]
+TXT_MODULATIONS = ["AFSK 1200"]
+
 
 def get_default_device_id():
     return Device.objects.get_or_create(raw_name="Default")[0].id
 
 
 def get_default_group_id():
-    return Group.objects.get_or_create(name="Default", begin_frequency=0, end_frequency=10000000000, modulation="FM")[0].id
+    return Group.objects.get_or_create(name="Default", begin_frequency=0, end_frequency=10000000000)[0].id
 
 
 def get_default_audio_class_id():
-    return AudioClass.objects.get_or_create(name="Default", subname="Default")[0].id
+    return 1
+
+
+def get_default_modulation():
+    return "Default"
+
+
+def get_default_media_class():
+    return "Default"
 
 
 class Device(models.Model):
@@ -41,36 +52,14 @@ class Spectrogram(models.Model):
 
 class Group(models.Model):
     name = models.CharField("Name", max_length=255)
-    modulation = models.CharField("Modulation", max_length=255)
     begin_frequency = models.PositiveBigIntegerField("Begin frequency", db_index=True)
     end_frequency = models.PositiveBigIntegerField("End frequency", db_index=True)
-    data_type = models.CharField("Data type", max_length=255, default="audio")
 
     class Meta:
-        unique_together = ("name", "modulation", "begin_frequency", "end_frequency")
+        unique_together = ("name", "begin_frequency", "end_frequency")
 
     def __str__(self):
-        return "%s - %s" % (self.name, self.modulation)
-
-    def save(self, *args, **kwargs):
-        if self.modulation in ["AM", "FM"]:
-            self.data_type = "audio"
-        elif self.modulation in ["AFSK 1200"]:
-            self.data_type = "txt"
-        else:
-            self.data_type = "data"
-        super().save(*args, **kwargs)
-
-
-class AudioClass(models.Model):
-    name = models.CharField("Name", max_length=255)
-    subname = models.CharField("Subname", max_length=255)
-
-    class Meta:
-        unique_together = ("name", "subname")
-
-    def __str__(self):
-        return "%s - %s" % (self.name, self.subname)
+        return self.name
 
 
 class Transmission(models.Model):
@@ -80,8 +69,8 @@ class Transmission(models.Model):
     end_date = models.DateTimeField("End (date)", db_index=True)
     sample_size = models.PositiveIntegerField("Sample size", db_index=True)
     data_file = models.FileField("Data file", upload_to="transmission/%Y-%m-%d/")
-    data_type = models.CharField("Data type", max_length=255)
-    audio_class = models.ForeignKey(AudioClass, on_delete=models.CASCADE, default=get_default_audio_class_id)
+    modulation = models.CharField("Modulation", max_length=255, default=get_default_modulation)
+    media_class = models.CharField("Media class", max_length=255, default=get_default_media_class)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, default=get_default_group_id)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, default=get_default_device_id)
     source = models.CharField("Source", max_length=255)
@@ -94,6 +83,15 @@ class Transmission(models.Model):
 
     def bandwidth(self):
         return self.end_frequency - self.begin_frequency
+
+    @property
+    def media_type(self):
+        if self.modulation in AUDIO_MODULATIONS:
+            return "audio"
+        elif self.modulation in TXT_MODULATIONS:
+            return "txt"
+        else:
+            return ""
 
 
 class GainTest(models.Model):

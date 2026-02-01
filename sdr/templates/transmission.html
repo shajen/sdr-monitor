@@ -13,7 +13,7 @@ Transmission - {{ transmission.frequency | frequency:2 }} - {{transmission.bandw
         <h3>Transmission name: {{ transmission.group.name }}</h3>
         <h3>Transmission frequency: {{ transmission.frequency | frequency:2 }} </h3>
         <h3>Transmission sample rate: {{ transmission.sample_rate | frequency}} </h3>
-        <h3>Transmission modulation: {{ transmission.group.modulation }}</h3>
+        <h3>Transmission modulation: {{ transmission.modulation }}</h3>
         <h3>Device: {{ transmission.device.name }} </h3>
         <h3>Raw file size: {{ transmission.data_file.size | natural_size }}</h3>
     </div>
@@ -32,13 +32,13 @@ Transmission - {{ transmission.frequency | frequency:2 }} - {{transmission.bandw
 </div>
 <div class="row mt-2">
     <div class="col-12">
-        {% if transmission.group.data_type == 'audio' %}
+        {% if transmission.media_type == 'audio' %}
         <div class="d-flex justify-content-center mb-2">
             <audio controls preload="none">
                 <source src="{% url 'sdr_transmission_data' transmission.id %}" type="audio/mpeg">
             </audio>
         </div>
-        {% elif transmission.group.data_type == 'txt' %}
+        {% elif transmission.media_type == 'txt' %}
         {% endif %}
         <div class="d-flex justify-content-center">
             <ul class="list-group">

@@ -13,7 +13,6 @@ class GroupAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
-        "modulation",
         "begin_frequency",
         "end_frequency",
     )
@@ -36,15 +35,6 @@ class SpectrogramAdmin(admin.ModelAdmin):
     )
 
 
-class AudioClassAdmin(admin.ModelAdmin):
-    list_per_page = 100
-    list_display = (
-        "id",
-        "name",
-        "subname",
-    )
-
-
 class TransmissionAdmin(admin.ModelAdmin):
     list_per_page = 100
     list_display = (
@@ -53,7 +43,8 @@ class TransmissionAdmin(admin.ModelAdmin):
         "source",
         "middle_frequency",
         "group",
-        "audio_class",
+        "modulation",
+        "media_class",
         "bandwidth",
         "duration",
         "begin_frequency",
@@ -61,7 +52,6 @@ class TransmissionAdmin(admin.ModelAdmin):
         "begin_date",
         "end_date",
         "data_file",
-        "data_type",
     )
 
 
@@ -87,7 +77,6 @@ class AppSettingAdmin(admin.ModelAdmin):
 admin.site.register(Device, DeviceAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Spectrogram, SpectrogramAdmin)
-admin.site.register(AudioClass, AudioClassAdmin)
 admin.site.register(Transmission, TransmissionAdmin)
 admin.site.register(GainTest, GainTestAdmin)
 admin.site.register(AppSetting, AppSettingAdmin)

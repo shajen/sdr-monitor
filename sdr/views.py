@@ -110,7 +110,7 @@ def transmissions(request):
     else:
         items = Transmission.objects.exclude(source="gain tester")
     items = Transmission.objects
-    options_lists = common.utils.filters.get_options_lists(request, items, ["device__name", "group__modulation", "group__name", "audio_class__name"])
+    options_lists = common.utils.filters.get_options_lists(request, items, ["device__name", "modulation", "group__name", "media_class"])
     items = items.annotate(
         duration=F("end_date") - F("begin_date"),
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
@@ -118,12 +118,11 @@ def transmissions(request):
     items = common.utils.filters.filter(request, items)
     items = common.utils.filters.order_by(request, items, ["-begin_date"])
     page_size = int(request.GET.get("page_size", "100"))
-    items = items.select_related("device", "group", "audio_class").only(
+    items = items.select_related("device", "group").only(
         "begin_date",
-        "audio_class__name",
+        "media_class",
         "device__name",
-        "group__data_type",
-        "group__modulation",
+        "modulation",
         "group__name",
     )
     items = Paginator(items, page_size).get_page(request.GET.get("page"))
@@ -139,11 +138,11 @@ def transmission(request, transmission_id):
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
     ).get(id=transmission_id)
     messages = (
-        sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.group.modulation, sample_rate=t.end_frequency - t.begin_frequency, format="json")
+        sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.modulation, sample_rate=t.end_frequency - t.begin_frequency, format="json")
         .stdout.read()
         .decode("utf-8")
         .split("\n")
-        if t.group.data_type == "txt"
+        if t.media_type == "txt"
         else []
     )
 
@@ -185,13 +184,13 @@ def transmission_data(request, transmission_id):
     elif format == "raw":
         filename = get_download_filename("transmission", t.id, "bin", t.begin_date)
         return redirect_file_response(filename, t.data_file.url)
-    elif t.group.data_type == "audio":
+    elif t.media_type == "audio":
         filename = get_download_filename("transmission", t.id, "mp3", t.begin_date)
-        process = sdr.signals.decode_audio(in_file=t.data_file.path, modulation=t.group.modulation, sample_rate=sample_rate, format="mp3")
+        process = sdr.signals.decode_audio(in_file=t.data_file.path, modulation=t.modulation, sample_rate=sample_rate, format="mp3")
         return streaming_file_response(filename, process_to_stream(process))
-    elif t.group.data_type == "txt":
+    elif t.media_type == "txt":
         filename = get_download_filename("transmission", t.id, "txt", t.begin_date)
-        process = sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.group.modulation, sample_rate=sample_rate, format="json")
+        process = sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.modulation, sample_rate=sample_rate, format="json")
         return streaming_file_response(filename, process_to_stream(process))
 
 
@@ -199,7 +198,7 @@ def transmission_data(request, transmission_id):
 @permission_required("sdr.change_group", raise_exception=True)
 def groups(request, message_success="", message_error=""):
     items = Group.objects.annotate(bandwidth=F("end_frequency") - F("begin_frequency"), transmissions_count=Count("transmission"))
-    options_lists = common.utils.filters.get_options_lists(request, items, ["name", "modulation"])
+    options_lists = common.utils.filters.get_options_lists(request, items, ["name"])
     items = common.utils.filters.filter(request, items)
     items = common.utils.filters.order_by(request, items, ["begin_frequency", "-bandwidth"])
     page_size = int(request.GET.get("page_size", "100"))
@@ -222,8 +221,7 @@ def add_group(request):
         name = request.GET["name"]
         begin_frequency = int(request.GET["begin_frequency"])
         end_frequency = int(request.GET["end_frequency"])
-        modulation = request.GET["modulation"]
-        Group.objects.get_or_create(name=name, begin_frequency=begin_frequency, end_frequency=end_frequency, modulation=modulation)
+        Group.objects.get_or_create(name=name, begin_frequency=begin_frequency, end_frequency=end_frequency)
         sdr.utils.group.update_groups()
         return groups(request, "Success!", "")
     except:

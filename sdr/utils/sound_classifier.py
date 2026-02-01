@@ -23,11 +23,11 @@ class SoundClassifier:
             return class_names[1:]
         return []
 
-    def __get_audio_class_name(self, name):
-        if name in ["Speech", "Music", "Unknown"]:
+    def __get_media_class_name(self, name):
+        if name in ["Speech", "Music"]:
             return name
         else:
-            return "Noise"
+            return "Unknown"
 
     def get_sound_label(self, t):
         try:
@@ -35,7 +35,7 @@ class SoundClassifier:
             process = sdr.signals.decode_audio(
                 in_file=t.data_file.path,
                 format="f32le",
-                modulation=t.group.modulation,
+                modulation=t.modulation,
                 sample_rate=sample_rate,
                 out_rate=16000,
                 duration=datetime.timedelta(seconds=10),
@@ -54,6 +54,6 @@ class SoundClassifier:
 
     def update(self, t):
         sound_label = self.get_sound_label(t)
-        name = self.__get_audio_class_name(sound_label)
-        t.audio_class = AudioClass.objects.get_or_create(name=name, subname=sound_label)[0]
+        media_class = self.__get_media_class_name(sound_label)
+        t.media_class = media_class
         t.save()
