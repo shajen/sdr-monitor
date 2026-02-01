@@ -26,7 +26,7 @@ Transmission - {{ transmission.frequency | frequency:2 }} - {{transmission.bandw
 
         <h3>Download decoded:
             <a href="{% url 'sdr_transmission_data' transmission.id %}?format=spectrogram" class="btn btn-primary" download>spectrogram</a>
-            <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>wav</a>
+            <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>content</a>
         </h3>
     </div>
 </div>

@@ -27,8 +27,14 @@ class ClassifierController(threading.Thread):
                 if t.group.data_type == "audio":
                     self.__sound_classifier.update(t)
                 elif t.group.data_type == "txt":
-                    messages = sdr.signals.decode_txt(t.data_file.path, t.group.modulation, t.end_frequency - t.begin_frequency)
-                    (name, subname) = ("Data", "Data") if messages else ("Noise", "Unknown")
+                    process = sdr.signals.decode_txt(
+                        in_file=t.data_file.path,
+                        modulation=t.group.modulation,
+                        sample_rate=t.end_frequency - t.begin_frequency,
+                        format="json",
+                        duration=datetime.timedelta(seconds=10),
+                    )
+                    (name, subname) = ("Data", "Data") if process.stdout.read() else ("Noise", "Unknown")
                     t.audio_class = AudioClass.objects.get_or_create(name=name, subname=subname)[0]
                     self.__logger.info("id: %d, frequency: %d Hz, date: %s, duration: %s, class: %s" % (t.id, t.middle_frequency(), localtime(t.end_date), t.duration(), name))
                     t.save()

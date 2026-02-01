@@ -55,18 +55,14 @@
                     <td class="py-1">{{ transmission.group.name }}</td>
                     <td class="py-1">{{ transmission.audio_class.name }}</td>
                     <td class="py-1">
-                        {% if transmission.group.data_type == 'audio' %}
                         <div class="btn-group" role="group">
+                            {% if transmission.group.data_type == 'audio' %}
                             <audio controls preload="none">
                                 <source src="{% url 'sdr_transmission_data' transmission.id %}" type="audio/mpeg">
                             </audio>
-                            <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>
-                                download </a>
+                            {% endif %}
+                            <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>download</a>
                         </div>
-                        {% elif transmission.group.data_type == 'image' %}
-                        <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>
-                            download </a>
-                        {% endif %}
                     </td>
                     <td class="py-1">
                         <a href="{% url 'sdr_transmission' transmission.id %}" class="btn btn-primary">open</a>

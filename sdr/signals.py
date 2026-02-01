@@ -81,33 +81,57 @@ def make_spectrogram(data, sample_rate):
     return out
 
 
-def decode_audio(in_file, out_file, modulation, sample_rate, out_rate=32000, duration=datetime.timedelta(seconds=3600)):
-    out_rate = min(sample_rate, out_rate)
+def truncate(in_file, sample_rate, duration):
+    return ["dd", "if=%s" % in_file, "bs=%d" % (sample_rate * 2), "count=%d" % duration.total_seconds(), "iflag=fullblock"]
+
+
+def pipeline(commands):
+    last_process = None
+    last_stdout = None
+
+    for command in commands:
+        process = subprocess.Popen(command, stdin=last_stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        if last_stdout:
+            last_stdout.close()
+        last_stdout = process.stdout
+        last_process = process
+    return last_process
+
+
+def decode_audio(in_file, format, modulation, sample_rate=32000, out_rate=32000, duration=datetime.timedelta(hours=2)):
     if modulation == "FM":
         if 75000 <= sample_rate:
-            decoder = "sdr/decoders/nbfm.lua"
-        else:
             decoder = "sdr/decoders/wbfm.lua"
+        else:
+            decoder = "sdr/decoders/nbfm.lua"
     elif modulation == "AM":
         decoder = "sdr/decoders/am.lua"
     else:
         return
 
-    if out_file:
-        subprocess.run(["luaradio", decoder, in_file, str(sample_rate), str(out_rate), out_file], stdout=subprocess.PIPE)
+    if format in ["mp3", "wav"]:
+        return pipeline(
+            [
+                truncate(in_file, sample_rate, duration),
+                [decoder, "-r", str(sample_rate), str(out_rate), "-f", "s16le"],
+                ["sox", "-t", "raw", "-r", str(out_rate), "-e", "signed", "-b", "16", "-c", "1", "-", "-t", format, "-"],
+            ]
+        )
     else:
-        return subprocess.run(["luaradio", decoder, in_file, str(sample_rate), str(out_rate)], stdout=subprocess.PIPE).stdout
+        return pipeline(
+            [
+                truncate(in_file, sample_rate, duration),
+                [decoder, "-r", str(sample_rate), str(out_rate), "-f", format],
+            ]
+        )
 
 
-def decode_txt(in_file, modulation, sample_rate):
-    if modulation == "AFSK1200":
-        try:
-            decoder = "sdr/decoders/aprs.lua"
-            result = subprocess.run(["luaradio", decoder, in_file, str(sample_rate)], stdout=subprocess.PIPE)
-            messages = result.stdout.decode("utf-8")
-            messages = [json.loads(m) for m in messages.strip().split("\n")]
-            return [" ".join([a["callsign"] for a in m["addresses"]] + [m["payload"]]) for m in messages]
-        except:
-            return []
-    else:
-        return []
+def decode_txt(in_file, format, modulation, sample_rate, duration=datetime.timedelta(hours=2)):
+    if modulation == "AFSK 1200":
+        return pipeline(
+            [
+                truncate(in_file, sample_rate, duration),
+                ["sdr/decoders/afsk.lua", "-r", str(sample_rate), "-b", "1200", "-f", format],
+                ["jq", "-r", '[.addresses[].callsign, .payload] | join(" | ")'],
+            ],
+        )

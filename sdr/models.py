@@ -55,7 +55,7 @@ class Group(models.Model):
     def save(self, *args, **kwargs):
         if self.modulation in ["AM", "FM"]:
             self.data_type = "audio"
-        elif self.modulation in ["AFSK1200"]:
+        elif self.modulation in ["AFSK 1200"]:
             self.data_type = "txt"
         else:
             self.data_type = "data"

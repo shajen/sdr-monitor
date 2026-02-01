@@ -32,7 +32,15 @@ class SoundClassifier:
     def get_sound_label(self, t):
         try:
             sample_rate = t.end_frequency - t.begin_frequency
-            data = sdr.signals.decode_audio(t.data_file.path, None, t.group.modulation, sample_rate, out_rate=16000, duration=datetime.timedelta(seconds=10))
+            process = sdr.signals.decode_audio(
+                in_file=t.data_file.path,
+                format="f32le",
+                modulation=t.group.modulation,
+                sample_rate=sample_rate,
+                out_rate=16000,
+                duration=datetime.timedelta(seconds=10),
+            )
+            data = process.stdout.read()
             data = np.frombuffer(data, dtype=np.float32)
             (sound_id, sound_label, accuracy) = self.__classifier.predict_class(data)
             self.__logger.info(

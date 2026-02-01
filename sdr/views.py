@@ -133,13 +133,33 @@ def transmissions(request):
 @login_required()
 @permission_required("sdr.view_transmission", raise_exception=True)
 def transmission(request, transmission_id):
-    transmission = Transmission.objects.annotate(
+    t = Transmission.objects.annotate(
         duration=TruncSecond("end_date") - TruncSecond("begin_date"),
         sample_rate=F("end_frequency") - F("begin_frequency"),
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
     ).get(id=transmission_id)
-    messages = sdr.signals.decode_txt(transmission.data_file.path, transmission.group.modulation, transmission.end_frequency - transmission.begin_frequency)
-    return render(request, "transmission.html", {"transmission": transmission, "messages_": messages})
+    messages = (
+        sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.group.modulation, sample_rate=t.end_frequency - t.begin_frequency, format="json")
+        .stdout.read()
+        .decode("utf-8")
+        .split("\n")
+        if t.group.data_type == "txt"
+        else []
+    )
+
+    return render(request, "transmission.html", {"transmission": t, "messages_": messages})
+
+
+def process_to_stream(process):
+    try:
+        while True:
+            data = process.stdout.read(1024 * 1024)
+            if not data:
+                break
+            yield data
+    finally:
+        process.terminate()
+        process.wait()
 
 
 @login_required()
@@ -166,9 +186,13 @@ def transmission_data(request, transmission_id):
         filename = get_download_filename("transmission", t.id, "bin", t.begin_date)
         return redirect_file_response(filename, t.data_file.url)
     elif t.group.data_type == "audio":
-        filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
-        sdr.signals.decode_audio(t.data_file.path, filename, t.group.modulation, sample_rate)
-        return file_response(filename)
+        filename = get_download_filename("transmission", t.id, "mp3", t.begin_date)
+        process = sdr.signals.decode_audio(in_file=t.data_file.path, modulation=t.group.modulation, sample_rate=sample_rate, format="mp3")
+        return streaming_file_response(filename, process_to_stream(process))
+    elif t.group.data_type == "txt":
+        filename = get_download_filename("transmission", t.id, "txt", t.begin_date)
+        process = sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.group.modulation, sample_rate=sample_rate, format="json")
+        return streaming_file_response(filename, process_to_stream(process))
 
 
 @staff_member_required()
