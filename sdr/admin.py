@@ -45,6 +45,7 @@ class TransmissionAdmin(admin.ModelAdmin):
         "group",
         "modulation",
         "media_class",
+        "accuracy",
         "bandwidth",
         "duration",
         "begin_frequency",

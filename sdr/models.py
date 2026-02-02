@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils.timezone import timedelta
 
-AUDIO_MODULATIONS = ["AM", "NBFM", "WBFM"]
+AUDIO_MODULATIONS = ["AM", "NBFM"]
+AUDIO_MODULATIONS_NO_AUTO_DETECT = ["WBFM"]
 TXT_MODULATIONS = ["AFSK 1200"]
 
 
@@ -23,6 +24,15 @@ def get_default_modulation():
 
 def get_default_media_class():
     return "Default"
+
+
+def get_media_type(modulation):
+    if modulation in AUDIO_MODULATIONS or modulation in AUDIO_MODULATIONS_NO_AUTO_DETECT:
+        return "audio"
+    elif modulation in TXT_MODULATIONS:
+        return "txt"
+    else:
+        return ""
 
 
 class Device(models.Model):
@@ -71,6 +81,7 @@ class Transmission(models.Model):
     data_file = models.FileField("Data file", upload_to="transmission/%Y-%m-%d/")
     modulation = models.CharField("Modulation", max_length=255, default=get_default_modulation)
     media_class = models.CharField("Media class", max_length=255, default=get_default_media_class)
+    accuracy = models.FloatField("Accuracy", default=0.0)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, default=get_default_group_id)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, default=get_default_device_id)
     source = models.CharField("Source", max_length=255)
@@ -86,12 +97,7 @@ class Transmission(models.Model):
 
     @property
     def media_type(self):
-        if self.modulation in AUDIO_MODULATIONS:
-            return "audio"
-        elif self.modulation in TXT_MODULATIONS:
-            return "txt"
-        else:
-            return ""
+        return get_media_type(self.modulation)
 
 
 class GainTest(models.Model):

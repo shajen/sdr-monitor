@@ -23,37 +23,23 @@ class SoundClassifier:
             return class_names[1:]
         return []
 
-    def __get_media_class_name(self, name):
-        if name in ["Speech", "Music"]:
-            return name
+    def __get_media_class_name(self, name, accuracy):
+        if name in ["Speech"]:
+            return (name, float(accuracy))
         else:
-            return "Unknown"
+            return ("Unknown", 0.0)
 
-    def get_sound_label(self, t):
-        try:
-            sample_rate = t.end_frequency - t.begin_frequency
-            process = sdr.signals.decode_audio(
-                in_file=t.data_file.path,
-                format="f32le",
-                modulation=t.modulation,
-                sample_rate=sample_rate,
-                out_rate=16000,
-                duration=datetime.timedelta(seconds=10),
-            )
-            data = process.stdout.read()
-            data = np.frombuffer(data, dtype=np.float32)
-            (sound_id, sound_label, accuracy) = self.__classifier.predict_class(data)
-            self.__logger.info(
-                "id: %d, frequency: %d Hz, date: %s, duration: %s, class: %s, accuracy: %.2f"
-                % (t.id, t.middle_frequency(), localtime(t.end_date), t.duration(), sound_label, accuracy)
-            )
-            return sound_label
-        except Exception as e:
-            self.__logger.warning("exception: %s" % e)
-            return "Unknown"
-
-    def update(self, t):
-        sound_label = self.get_sound_label(t)
-        media_class = self.__get_media_class_name(sound_label)
-        t.media_class = media_class
-        t.save()
+    def get_sound_label(self, t, modulation=""):
+        sample_rate = t.end_frequency - t.begin_frequency
+        process = sdr.signals.decode_audio(
+            in_file=t.data_file.path,
+            format="f32le",
+            modulation=modulation or t.modulation,
+            sample_rate=sample_rate,
+            out_rate=16000,
+            duration=datetime.timedelta(seconds=10),
+        )
+        data = process.stdout.read()
+        data = np.frombuffer(data, dtype=np.float32)
+        (_, sound_label, accuracy) = self.__classifier.predict_class(data)
+        return self.__get_media_class_name(sound_label, accuracy)
