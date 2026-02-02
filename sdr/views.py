@@ -317,6 +317,15 @@ def satellites(request):
         return render(request, "flights.html", {"flights": flights})
 
 
+@login_required()
+def modulations(request):
+    m = AUDIO_MODULATIONS + AUDIO_MODULATIONS_NO_AUTO_DETECT + TXT_MODULATIONS
+    m.sort()
+    m.append(get_default_modulation())
+    m.append("Unknown")
+    return JsonResponse(m, safe=False)
+
+
 @staff_member_required()
 def gain_tester(request):
     return render(request, "gain_tester.html", {"mqtt": monitor.settings.MQTT})

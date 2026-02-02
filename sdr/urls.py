@@ -10,6 +10,7 @@ urlpatterns = [
     path("data/", sdr.views.data, name="sdr_data"),
     path("all/", sdr.views.all, name="sdr_all"),
     path("satellites/", sdr.views.satellites, name="sdr_satellites"),
+    path("modulations/", sdr.views.modulations, name="sdr_modulations"),
     path("spectrogram/<int:spectrogram_id>/", sdr.views.spectrogram, name="sdr_spectrogram"),
     path("spectrogram/<int:spectrogram_id>/data/", sdr.views.spectrogram_data, name="sdr_spectrogram_data"),
     path("spectrograms/", sdr.views.spectrograms, name="sdr_spectrograms"),
