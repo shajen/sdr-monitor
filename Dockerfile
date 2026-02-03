@@ -26,10 +26,14 @@ RUN MAKEFLAGS="-j$(nproc)" pip install --break-system-packages --no-cache-dir -r
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python3 python3-numpy sox libsox-fmt-all jq lua-argparse luajit libliquid1 libvolk-dev libfftw3-bin libpq5 tzdata ca-certificates gettext libmysqlclient21 libjpeg8 libopenexr-3-1-30 libpng16-16t64 libfreetype6 && \
+    apt-get install -y --no-install-recommends curl python3 python3-numpy sox libsox-fmt-all jq lua-argparse luajit libliquid1 libvolk-dev libfftw3-bin libpq5 tzdata ca-certificates gettext libmysqlclient21 libjpeg8 libopenexr-3-1-30 libpng16-16t64 libfreetype6 && \
     apt-get autoremove -y && \
     apt-get clean all && \
     rm -rf /var/lib/apt/lists/
+
+RUN curl -LO https://github.com/atkrad/wait4x/releases/download/v3.6.0/wait4x-linux-amd64.tar.gz && \
+    tar -xf wait4x-linux-amd64.tar.gz -C /usr/local/bin/ wait4x && \
+    rm -rf wait4x-linux-amd64.tar.gz
 
 COPY --from=builder /usr/local/lib/python3.12/dist-packages/ /usr/local/lib/python3.12/dist-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
@@ -50,4 +54,4 @@ RUN echo "$(TZ=UTC date +"%Y-%m-%dT%H:%M:%S%z")" | tee /sdr_monitor_build_time &
     echo "$CHANGES" | tee /sdr_monitor_changes
 
 EXPOSE 8000
-ENTRYPOINT [ "/entrypoint/entrypoint.sh" ]
+CMD [ "/entrypoint/entrypoint.sh" ]
