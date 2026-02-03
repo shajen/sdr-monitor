@@ -69,7 +69,11 @@ class Cleaner(threading.Thread):
                 removed += 1
                 objects.append(t.id)
                 self.__logger.debug("removing transmission: %d, %s" % (t.id, t.begin_date))
+            if 1000 <= len(objects):
+                Transmission.objects.filter(id__in=objects).delete()
+                objects = []
 
         self.__logger.info("transmissions max size: %.2f GB, current size: %.2f" % (self.__transmissions_total_size_gb, total_size / 1024 / 1024 / 1024))
-        Transmission.objects.filter(id__in=objects).delete()
+        if objects:
+            Transmission.objects.filter(id__in=objects).delete()
         self.__logger.info("removed last %d transmissions" % removed)

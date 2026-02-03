@@ -302,7 +302,8 @@ function addScannedFrequency(ranges, range) {
     $("#devices").append(tr);
 }
 
-function addSatellite(satellites, satellite) {
+async function addSatellite(satellites, satellite) {
+    const modulations = await $.getJSON("/sdr/modulations");
     let tr = document.createElement("tr");
     $(tr).append(createInput(satellite['id'], function (value) {
         satellite['id'] = value;
@@ -318,7 +319,7 @@ function addSatellite(satellites, satellite) {
     }));
     $(tr).append(createInputSelect(satellite['modulation'], function (value) {
         satellite['modulation'] = value;
-    }, "", ["AM", "FM", "Other"], "string"));
+    }, "", modulations, "string"));
     $(tr).append(createButton("Delete", function () {
         let index = Array.prototype.indexOf.call($(tr).parent().children(), tr) - 1;
         index -= 1; // because help
@@ -340,7 +341,8 @@ function addGain(gain) {
     $("#gains").append(tr);
 }
 
-function addCrontab(objects, object) {
+async function addCrontab(objects, object) {
+    const modulations = await $.getJSON("/sdr/modulations");
     let tr = document.createElement("tr");
     $(tr).append(createInput(object['name'], function (value) {
         object['name'] = value;
@@ -359,7 +361,7 @@ function addCrontab(objects, object) {
     }));
     $(tr).append(createInputSelect(object['modulation'], function (value) {
         object['modulation'] = value;
-    }, "", ["AM", "FM", "Other"], "string"));
+    }, "", modulations, "string"));
     $(tr).append(createButton("Delete", function () {
         let index = Array.prototype.indexOf.call($(tr).parent().children(), tr) - 1;
         index -= 1; // because help

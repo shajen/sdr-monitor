@@ -1,6 +1,5 @@
 from common.helpers import *
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required, permission_required
@@ -110,24 +109,22 @@ def transmissions(request):
         items = Transmission.objects
     else:
         items = Transmission.objects.exclude(source="gain tester")
-    items = (
-        items.select_related("device")
-        .select_related("group")
-        .annotate(
-            device_name=F("device__name"),
-            group_name=F("group__name"),
-            modulation=F("group__modulation"),
-            datetime=F("begin_date"),
-            duration=TruncSecond("end_date") - TruncSecond("begin_date"),
-            frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
-            class_name=F("audio_class__name"),
-            class_subname=F("audio_class__subname"),
-        )
+    items = Transmission.objects
+    options_lists = common.utils.filters.get_options_lists(request, items, ["device__name", "modulation", "group__name", "media_class"])
+    items = items.annotate(
+        duration=F("end_date") - F("begin_date"),
+        frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
     )
-    options_lists = common.utils.filters.get_options_lists(request, items, ["device_name", "modulation", "group_name", "class_name"])
     items = common.utils.filters.filter(request, items)
-    items = common.utils.filters.order_by(request, items, ["-datetime", "frequency"])
+    items = common.utils.filters.order_by(request, items, ["-begin_date"])
     page_size = int(request.GET.get("page_size", "100"))
+    items = items.select_related("device", "group").only(
+        "begin_date",
+        "media_class",
+        "device__name",
+        "modulation",
+        "group__name",
+    )
     items = Paginator(items, page_size).get_page(request.GET.get("page"))
     return render(request, "transmissions.html", dict({"items": items}, **options_lists))
 
@@ -135,12 +132,33 @@ def transmissions(request):
 @login_required()
 @permission_required("sdr.view_transmission", raise_exception=True)
 def transmission(request, transmission_id):
-    transmission = Transmission.objects.annotate(
+    t = Transmission.objects.annotate(
         duration=TruncSecond("end_date") - TruncSecond("begin_date"),
         sample_rate=F("end_frequency") - F("begin_frequency"),
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
     ).get(id=transmission_id)
-    return render(request, "transmission.html", {"transmission": transmission})
+    messages = (
+        sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.modulation, sample_rate=t.end_frequency - t.begin_frequency, format="json")
+        .stdout.read()
+        .decode("utf-8")
+        .split("\n")
+        if t.media_type == "txt"
+        else []
+    )
+
+    return render(request, "transmission.html", {"transmission": t, "messages_": messages})
+
+
+def process_to_stream(process):
+    try:
+        while True:
+            data = process.stdout.read(1024 * 1024)
+            if not data:
+                break
+            yield data
+    finally:
+        process.terminate()
+        process.wait()
 
 
 @login_required()
@@ -156,27 +174,35 @@ def transmission_data(request, transmission_id):
         drawer = sdr.drawer.Drawer(frequency_labels_count=8, draw_time=False, draw_power=True, text_size=16, text_stroke=2, min_width=1024)
         drawer.draw_spectrogram(data, filename, data.shape[1], data.shape[0], t.begin_frequency, t.end_frequency, list(range(data.shape[0])))
         return file_response(filename)
-    elif format == "raw_complex64":
+    elif format == "gqrx":
         filename = get_download_raw_iq_filename("transmission", t.id, "fc", "raw", t.middle_frequency(), sample_rate, t.begin_date)
         return streaming_file_response(filename, convert_uint8_to_float32_stream(t.data_file.path), t.data_file.size * 4)
     elif format == "raw_wav":
-        filename = get_download_raw_iq_filename("transmission", t.id, "fc", "wav", t.middle_frequency(), sample_rate, t.begin_date)
+        filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
         header = wav_header_from_cu8_pcm16(t.data_file.path, sample_rate)
         return streaming_file_response(filename, wav_stream_from_cu8_pcm16(t.data_file.path, sample_rate), len(header) + t.data_file.size * 2)
     elif format == "raw":
-        filename = get_download_raw_iq_filename("transmission", t.id, "cu8", "raw", t.middle_frequency(), sample_rate, t.begin_date)
+        filename = get_download_filename("transmission", t.id, "bin", t.begin_date)
         return redirect_file_response(filename, t.data_file.url)
     elif t.group.modulation in ["FM", "AM"]:
         filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
         sdr.signals.decode_audio(t.data_file.path, filename, t.group.modulation, sample_rate, duration = t.duration())
         return file_response(filename)
+    elif t.media_type == "audio":
+        filename = get_download_filename("transmission", t.id, "mp3", t.begin_date)
+        process = sdr.signals.decode_audio(in_file=t.data_file.path, modulation=t.modulation, sample_rate=sample_rate, format="mp3")
+        return streaming_file_response(filename, process_to_stream(process))
+    elif t.media_type == "txt":
+        filename = get_download_filename("transmission", t.id, "txt", t.begin_date)
+        process = sdr.signals.decode_txt(in_file=t.data_file.path, modulation=t.modulation, sample_rate=sample_rate, format="json")
+        return streaming_file_response(filename, process_to_stream(process))
 
 
 @staff_member_required()
 @permission_required("sdr.change_group", raise_exception=True)
 def groups(request, message_success="", message_error=""):
     items = Group.objects.annotate(bandwidth=F("end_frequency") - F("begin_frequency"), transmissions_count=Count("transmission"))
-    options_lists = common.utils.filters.get_options_lists(request, items, ["name", "modulation"])
+    options_lists = common.utils.filters.get_options_lists(request, items, ["name"])
     items = common.utils.filters.filter(request, items)
     items = common.utils.filters.order_by(request, items, ["begin_frequency", "-bandwidth"])
     page_size = int(request.GET.get("page_size", "100"))
@@ -199,8 +225,7 @@ def add_group(request):
         name = request.GET["name"]
         begin_frequency = int(request.GET["begin_frequency"])
         end_frequency = int(request.GET["end_frequency"])
-        modulation = request.GET["modulation"]
-        Group.objects.get_or_create(name=name, begin_frequency=begin_frequency, end_frequency=end_frequency, modulation=modulation)
+        Group.objects.get_or_create(name=name, begin_frequency=begin_frequency, end_frequency=end_frequency)
         sdr.utils.group.update_groups()
         return groups(request, "Success!", "")
     except:
@@ -231,7 +256,17 @@ def config(request):
 
 @staff_member_required()
 def logs(request):
-    return common.utils.files.get_directory_as_archive_response(settings.LOG_DIR, "logs")
+    return common.utils.files.get_directory_as_archive_response([(monitor.settings.LOG_DIR, "log")], "log")
+
+
+@staff_member_required()
+def data(request):
+    return common.utils.files.get_directory_as_archive_response([os.path.join(monitor.settings.BASE_DIR, "data")], "data")
+
+
+@staff_member_required()
+def all(request):
+    return common.utils.files.get_directory_as_archive_response([(monitor.settings.LOG_DIR, "log"), os.path.join(monitor.settings.BASE_DIR, "data")], "all")
 
 
 class SatellitesForm(forms.Form):
@@ -284,6 +319,15 @@ def satellites(request):
         return JsonResponse(flights, safe=False)
     else:
         return render(request, "flights.html", {"flights": flights})
+
+
+@login_required()
+def modulations(request):
+    m = AUDIO_MODULATIONS + AUDIO_MODULATIONS_NO_AUTO_DETECT + TXT_MODULATIONS
+    m.sort()
+    m.append(get_default_modulation())
+    m.append("Unknown")
+    return JsonResponse(m, safe=False)
 
 
 @staff_member_required()

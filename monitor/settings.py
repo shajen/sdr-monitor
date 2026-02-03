@@ -6,6 +6,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "0123456789012345678901234567890123456789")
 DEBUG = str_to_bool(os.getenv("DJANGO_DEBUG", "0"))
+INTERNAL_IPS = os.getenv("DJANGO_DEBUG_HOSTS", "127.0.0.1").split(",")
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_VIRTUAL_HOST", "http://127.0.0.1").split(",")
 STATIC_ROOT = os.path.join(BASE_DIR, "data", "public", "static")
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_cleanup.apps.CleanupConfig",
     "django_bootstrap_icons",
+    "debug_toolbar",
     "crispy_forms",
     "crispy_bootstrap5",
     "common",
@@ -51,6 +53,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "monitor.urls"

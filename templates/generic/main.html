@@ -8,23 +8,16 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
     {% include "generic/meta/fonts.html" %}
+
     {% include "generic/meta/css.html" %}
-    <link href="{% static 'libs/jquery.datetimepicker.css' %}" rel="stylesheet">
     <link href="{% static 'css/logis.css' %}" rel="stylesheet">
     <link href="{% static 'css/logis_custom.css' %}" rel="stylesheet">
     <link href="{% static 'css/dragscroll.css' %}" rel="stylesheet">
 
     {% include "generic/meta/js.html" %}
-
-    <script src="{% static 'libs/jquery.min.js' %}"></script>
-    <script src="{% static 'libs/dragscroll.min.js' %}"></script>
-    <script src="{% static 'libs/jquery.datetimepicker.full.min.js' %}"></script>
-    <script src="{% static 'libs/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'libs/url.min.js' %}"></script>
-    <script src="{% static 'libs/mqtt.min.js' %}"></script>
-
     <script src="{% static 'js/collapse.js' %}"></script>
     <script src="{% static 'js/field_filter.js' %}"></script>
+
     {% block main_scripts %}
     {% endblock %}
 
@@ -42,7 +35,7 @@
             </a>
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li class="dropdown"><a href="#"><span>Configuration</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                    <li class="dropdown"><a href="#"><span>{% trans "CONFIGURATION" %}</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li><a href="{% url 'sdr_settings' %}">Monitor settings</a></li>
                             <li><a href="{% url 'sdr_config' %}">Sdr settings</a></li>
@@ -63,6 +56,8 @@
                             <li><a href="{% url 'admin:index' %}">{% trans "ADMIN PANEL" %}</a></li>
                             {% endif %}
                             <li><a href="{% url 'sdr_logs' %}">{% trans "DOWNLOAD LOGS" %}</a></li>
+                            <li><a href="{% url 'sdr_data' %}">{% trans "DOWNLOAD DATA" %}</a></li>
+                            <li><a href="{% url 'sdr_all' %}">{% trans "DOWNLOAD ALL" %}</a></li>
                         </ul>
                     </li>
                     {% if user.is_authenticated %}

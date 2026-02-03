@@ -13,7 +13,7 @@
                     <form action="{% url 'sdr_spectrograms' %}" method="get">
                         {% include "generic/headers/filter_string.html" with field="device_name" options=device_name_options %}
                         {% include "generic/headers/filter_string.html" with field="source" options=source_options %}
-                        {% include "generic/headers/filter_number.html" with field="datetime" %}
+                        {% include "generic/headers/filter_date.html" with field="datetime" %}
                         {% include "generic/headers/filter_number.html" with field="samples" %}
                         {% include "generic/headers/filter_number.html" with field="frequency" %}
                         {% include "generic/headers/filter_number.html" with field="sample_rate" %}

@@ -11,13 +11,14 @@
             <table class="table table-striped table-bordered table-hover">
                 <tr>
                     <form action="{% url 'sdr_transmissions' %}" method="get">
-                        {% include "generic/headers/filter_string.html" with field="device_name" options=device_name_options %}
-                        {% include "generic/headers/filter_number.html" with field="datetime" %}
-                        {% include "generic/headers/filter_number.html" with field="duration" %}
+                        {% include "generic/headers/filter_string.html" with field="device__name" options=device__name_options %}
+                        {% include "generic/headers/filter_datetime.html" with field="begin_date" %}
+                        {% include "generic/headers/filter_duration.html" with field="duration" %}
                         {% include "generic/headers/filter_number.html" with field="frequency" %}
+                        {% include "generic/headers/filter_string.html" with field="group__name" options=group__name_options %}
                         {% include "generic/headers/filter_string.html" with field="modulation" options=modulation_options %}
-                        {% include "generic/headers/filter_string.html" with field="group_name" options=group_name_options %}
-                        {% include "generic/headers/filter_string.html" with field="class_name" options=class_name_options %}
+                        {% include "generic/headers/filter_string.html" with field="media_class" options=media_class_options %}
+                        {% include "generic/headers/filter_number.html" with field="accuracy" %}
                         <th colspan="3">
                             <input type="hidden" id="input_order_by" value="{{ order_by }}" name="order_by">
                             <input type="submit" class="btn btn-success" value="Filter">
@@ -26,13 +27,14 @@
                     </form>
                 </tr>
                 <tr>
-                    {% include "generic/headers/sort.html" with name="Device" field="device_name" col="1" %}
-                    {% include "generic/headers/sort.html" with name="Date" field="datetime" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Device" field="device__name" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Date" field="begin_date" col="1" %}
                     {% include "generic/headers/sort.html" with name="Duration" field="duration" col="1" %}
                     {% include "generic/headers/sort.html" with name="Frequency" field="frequency" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Group" field="group__name" col="1" %}
                     {% include "generic/headers/sort.html" with name="Modulation" field="modulation" col="1" %}
-                    {% include "generic/headers/sort.html" with name="Group" field="group_name" col="1" %}
-                    {% include "generic/headers/sort.html" with name="Class" field="class_name" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Class" field="media_class" col="1" %}
+                    {% include "generic/headers/sort.html" with name="Accuracy" field="accuracy" col="1" %}
                     <th class="col-md-2">
                         Decoded file
                     </th>
@@ -42,31 +44,28 @@
                 </tr>
                 {% for transmission in items %}
                 <tr>
-                    <td class="py-1">{{ transmission.device_name }}</td>
+                    <td class="py-1">{{ transmission.device.name }}</td>
                     <td class="py-1">
                         <nobr>
-                            {{ transmission.datetime|date:"Y-m-d" }}
-                            <b>{{ transmission.datetime|date:"H:i:s" }}</b>
+                            {{ transmission.begin_date|date:"Y-m-d" }}
+                            <b>{{ transmission.begin_date|date:"H:i:s" }}</b>
                         </nobr>
                     </td>
-                    <td class="py-1">{{ transmission.duration }}</td>
+                    <td class="py-1">{{ transmission.duration|duration }}</td>
                     <td class="py-1">{{ transmission.frequency|frequency:2 }}</td>
+                    <td class="py-1">{{ transmission.group.name }}</td>
                     <td class="py-1">{{ transmission.modulation }}</td>
-                    <td class="py-1">{{ transmission.group_name }}</td>
-                    <td class="py-1">{{ transmission.class_name }}</td>
+                    <td class="py-1">{{ transmission.media_class }}</td>
+                    <td class="py-1">{{ transmission.accuracy|floatformat:2 }}</td>
                     <td class="py-1">
-                        {% if transmission.group.data_type == 'audio' %}
                         <div class="btn-group" role="group">
+                            {% if transmission.media_type == 'audio' %}
                             <audio controls preload="none">
                                 <source src="{% url 'sdr_transmission_data' transmission.id %}" type="audio/mpeg">
                             </audio>
-                            <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>
-                                download </a>
+                            {% endif %}
+                            <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>download</a>
                         </div>
-                        {% elif transmission.group.data_type == 'image' %}
-                        <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>
-                            download </a>
-                        {% endif %}
                     </td>
                     <td class="py-1">
                         <a href="{% url 'sdr_transmission' transmission.id %}" class="btn btn-primary">open</a>

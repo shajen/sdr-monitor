@@ -7,11 +7,13 @@ django_bootstrap_icons
 django_cleanup
 django-admin-tools
 django-crispy-forms
+django-debug-toolbar
 django-extensions
 django-templates-macros
 gunicorn
 humanize
 matplotlib
+mysqlclient
 numpy
 OpenImageIO
 paho-mqtt

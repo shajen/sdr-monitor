@@ -1,14 +1,12 @@
-from gnuradio import blocks
 import astropy.nddata
 import datetime
 import io
+import json
 import math
 import numpy as np
 import os
-import sdr.decoders.am_decoder
-import sdr.decoders.fm_decoder
-import sdr.decoders.wfm_decoder
 import struct
+import subprocess
 import wave
 
 
@@ -83,24 +81,49 @@ def make_spectrogram(data, sample_rate):
     return out
 
 
-def decode_audio(in_file, out_file, modulation, sample_rate, out_rate=32000, duration=datetime.timedelta(seconds=3600)):
-    out_rate = min(sample_rate, out_rate)
-    if modulation == "FM":
-        if 75000 <= sample_rate:
-            decoder = sdr.decoders.wfm_decoder.wfm_decoder(in_file, sample_rate, out_rate, duration.total_seconds())
-        else:
-            decoder = sdr.decoders.fm_decoder.fm_decoder(in_file, sample_rate, out_rate, duration.total_seconds())
-    elif modulation == "AM":
-        decoder = sdr.decoders.am_decoder.am_decoder(in_file, sample_rate, out_rate, duration.total_seconds())
-    else:
-        return []
+def truncate(in_file, sample_rate, duration):
+    return ["dd", "if=%s" % in_file, "bs=%d" % (sample_rate * 2), "count=%d" % duration.total_seconds(), "iflag=fullblock"]
 
-    if out_file:
-        wav_block = blocks.wavfile_sink(out_file, 1, out_rate, blocks.FORMAT_WAV, blocks.FORMAT_PCM_16, False)
-        decoder.connect((decoder.blocks_multiply_const_vxx_0, 0), (wav_block, 0))
-        decoder.run()
+
+def pipeline(commands):
+    last_process = None
+    last_stdout = None
+
+    for command in commands:
+        process = subprocess.Popen(command, stdin=last_stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        if last_stdout:
+            last_stdout.close()
+        last_stdout = process.stdout
+        last_process = process
+    return last_process
+
+
+def decode_audio(in_file, format, modulation, sample_rate=32000, out_rate=32000, duration=datetime.timedelta(hours=2)):
+    decoder = "sdr/decoders/%s.lua" % modulation.lower()
+
+    if format in ["mp3", "wav"]:
+        return pipeline(
+            [
+                truncate(in_file, sample_rate, duration),
+                [decoder, "-r", str(sample_rate), str(out_rate), "-f", "s16le"],
+                ["sox", "-t", "raw", "-r", str(out_rate), "-e", "signed", "-b", "16", "-c", "1", "-", "-t", format, "-"],
+            ]
+        )
     else:
-        vector_block = blocks.vector_sink_f(1, 1024)
-        decoder.connect((decoder.blocks_multiply_const_vxx_0, 0), (vector_block, 0))
-        decoder.run()
-        return vector_block.data()
+        return pipeline(
+            [
+                truncate(in_file, sample_rate, duration),
+                [decoder, "-r", str(sample_rate), str(out_rate), "-f", format],
+            ]
+        )
+
+
+def decode_txt(in_file, format, modulation, sample_rate, duration=datetime.timedelta(hours=2)):
+    modulation, baud_rate = modulation.split(" ")
+    return pipeline(
+        [
+            truncate(in_file, sample_rate, duration),
+            ["sdr/decoders/%s.lua" % (modulation.lower()), "-r", str(sample_rate), "-b", baud_rate, "-f", format],
+            ["jq", "-r", '[.addresses[].callsign, .payload] | join(" | ")'],
+        ],
+    )
