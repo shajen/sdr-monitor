@@ -64,7 +64,9 @@
                                 <source src="{% url 'sdr_transmission_data' transmission.id %}" type="audio/mpeg">
                             </audio>
                             {% endif %}
+                            {% if transmission.media_type != '' %}
                             <a href="{% url 'sdr_transmission_data' transmission.id %}" class="btn btn-primary" download>download</a>
+                            {% endif %}
                         </div>
                     </td>
                     <td class="py-1">
