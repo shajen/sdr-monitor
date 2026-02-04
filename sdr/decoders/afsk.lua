@@ -19,6 +19,7 @@ local input_rate = args.rate
 local baud_rate = args.baud_rate
 
 local source = radio.IQFileSource(args.input, "u8", input_rate)
+local filter = radio.LowpassFilterBlock(128, 12500)
 local nbfm_demod = radio.NBFMDemodulator(3e3, 3e3)
 local hilbert = radio.HilbertTransformBlock(129)
 local translator = radio.FrequencyTranslatorBlock(-1700)
@@ -30,11 +31,10 @@ local sampler = radio.SamplerBlock()
 local bit_slicer = radio.SlicerBlock()
 local bit_decoder = radio.DifferentialDecoderBlock(true)
 local framer = radio.AX25FramerBlock()
-local sink = (args.format == "raw" and radio.RawFileSink(args.output, "f32le")) or
-                 (args.format == "json" and radio.JSONSink(args.output, 1))
+local sink = (args.format == "raw" and radio.RawFileSink(args.output, "f32le")) or (args.format == "json" and radio.JSONSink(args.output, 1))
 
 local top = radio.CompositeBlock()
-top:connect(source, nbfm_demod, hilbert, translator, afsk_filter, afsk_demod, data_filter, clock_recoverer)
+top:connect(source, filter, nbfm_demod, hilbert, translator, afsk_filter, afsk_demod, data_filter, clock_recoverer)
 top:connect(data_filter, "out", sampler, "data")
 top:connect(clock_recoverer, "out", sampler, "clock")
 top:connect(sampler, bit_slicer, bit_decoder, framer, sink)
