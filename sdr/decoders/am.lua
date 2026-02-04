@@ -7,7 +7,7 @@ local parser = argparse()
 parser:option("-i --input"):args(1):default(io.stdin)
 parser:option("-o --output"):args(1):default(io.stdout)
 parser:option("-r --rate"):args(2):default({"32000", "16000"}):convert(tonumber)
-parser:option("-f --format"):choices({"s16le", "f32le", "wav", "port_audio", "pulse_audio"}):default("pulse_audio")
+parser:option("-f --format"):choices({"u8", "s8", "u16le", "s16le", "u32le", "s32le", "f32le", "f64le", "wav", "port_audio", "pulse_audio"}):default("pulse_audio")
 local args = parser:parse()
 
 local function gcd(a, b)
