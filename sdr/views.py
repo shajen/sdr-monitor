@@ -186,7 +186,7 @@ def transmission_data(request, transmission_id):
         return redirect_file_response(filename, t.data_file.url)
     elif t.media_type == "audio":
         filename = get_download_filename("transmission", t.id, "mp3", t.begin_date)
-        process = sdr.signals.decode_audio(in_file=t.data_file.path, modulation=t.modulation, sample_rate=sample_rate, format="mp3")
+        process = sdr.signals.decode_audio(in_file=t.data_file.path, modulation=t.modulation, sample_rate=sample_rate, out_rate=sample_rate, format="mp3")
         return streaming_file_response(filename, process_to_stream(process))
     elif t.media_type == "txt":
         filename = get_download_filename("transmission", t.id, "txt", t.begin_date)

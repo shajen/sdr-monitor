@@ -98,8 +98,9 @@ def pipeline(commands):
     return last_process
 
 
-def decode_audio(in_file, format, modulation, sample_rate=32000, out_rate=32000, duration=datetime.timedelta(hours=2)):
+def decode_audio(in_file, format, modulation, sample_rate, out_rate, duration=datetime.timedelta(hours=2)):
     decoder = "sdr/decoders/%s.lua" % modulation.lower()
+    out_rate = min(out_rate, 48000)
 
     if format in ["mp3", "wav"]:
         return pipeline(
