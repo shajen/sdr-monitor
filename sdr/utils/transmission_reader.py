@@ -95,6 +95,6 @@ class TransmissionReader:
             self.__logger.info(
                 f"source: {source}, name: {name}, device: {device}, frequency: {frequency}, bandwidth: {bandwidth}, modulation: {modulation}, datetime: {dt}, data size: {naturalsize(len(data))}"
             )
-            self.append_transmission(device, dt, begin_frequency, end_frequency, data, bandwidth, modulation, "uint8", source, name)
+            self.append_transmission(device, dt, begin_frequency, end_frequency, data, bandwidth, modulation, "uint8", source, name if name != "auto" else "")
             return True
         return False
