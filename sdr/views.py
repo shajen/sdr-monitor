@@ -44,7 +44,7 @@ def spectrograms(request):
         device_name=F("device__name"),
         datetime=F("begin_model_date"),
         date=TruncDate("begin_model_date"),
-        samples=Length("labels") / 8,
+        samples=F("sample_nos"),
         sample_rate=F("end_frequency") - F("begin_frequency"),
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
         duration=TruncSecond("end_real_date") - TruncSecond("begin_real_date"),
@@ -62,7 +62,7 @@ def spectrograms(request):
 def spectrogram(request, spectrogram_id):
     mode = request.GET.get("mode", "static")
     spectrogram = Spectrogram.objects.annotate(
-        samples=Length("labels") / 8,
+        samples=F("sample_nos"),
         sample_rate=F("end_frequency") - F("begin_frequency"),
         frequency=F("begin_frequency") + (F("end_frequency") - F("begin_frequency")) / 2,
         duration=TruncSecond("end_real_date") - TruncSecond("begin_real_date"),
@@ -77,7 +77,7 @@ def spectrogram_data(request, spectrogram_id):
     s = Spectrogram.objects.get(id=spectrogram_id)
     if format == "image":
         filename = "tmp_%s.jpg" % uuid.uuid4().hex
-        y_labels = np.frombuffer(s.labels, dtype=np.uint64)
+        y_labels = np.fromfile(s.labels_file.path, dtype=np.uint64)
         y_size = y_labels.size
         x_size = s.data_file.file.size // y_size
         data = np.memmap(s.data_file.path, dtype=np.int8, mode="r", shape=(y_size, x_size))
@@ -184,6 +184,10 @@ def transmission_data(request, transmission_id):
     elif format == "raw":
         filename = get_download_filename("transmission", t.id, "bin", t.begin_date)
         return redirect_file_response(filename, t.data_file.url)
+    elif t.group.modulation in ["FM", "AM"]:
+        filename = get_download_filename("transmission", t.id, "wav", t.begin_date)
+        sdr.signals.decode_audio(t.data_file.path, filename, t.group.modulation, sample_rate, duration = t.duration())
+        return file_response(filename)
     elif t.media_type == "audio":
         filename = get_download_filename("transmission", t.id, "mp3", t.begin_date)
         process = sdr.signals.decode_audio(in_file=t.data_file.path, modulation=t.modulation, sample_rate=sample_rate, out_rate=sample_rate, format="mp3")
